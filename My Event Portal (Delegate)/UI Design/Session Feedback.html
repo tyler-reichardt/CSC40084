@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Feedback - BookMeIn2</title>
+    <link rel="stylesheet" href="../../bookmein2-style-library.css">
+    <style>
+        /* Page-specific styles using the design system */
+        .star-rating {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+            margin: var(--spacing-lg) 0;
+        }
+
+        .star {
+            font-size: 2.5rem;
+            color: var(--neutral-300);
+            cursor: pointer;
+            transition: all var(--transition);
+            line-height: 1;
+            border: none;
+            background: none;
+            padding: 0;
+        }
+
+        .star:hover {
+            color: var(--warning-500);
+            transform: scale(1.1);
+        }
+
+        .star.filled {
+            color: var(--warning-500);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .star {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-xl">
+        <!-- Page Header -->
+        <div class="text-center mb-2xl">
+            <h1 class="text-h2 text-primary-600 mb-sm">BookMeIn2 Event Platform</h1>
+            <p class="text-secondary">My Event Portal - Session Feedback</p>
+        </div>
+
+        <!-- Session Information Card -->
+        <div class="card card-elevated mb-xl">
+            <h2 class="card-header">Current Session Information</h2>
+            <div class="card-content">
+                <div class="grid grid-cols-2 gap-lg mobile:grid-cols-1">
+                    <div>
+                        <p class="text-xs text-tertiary mb-xs">SESSION TITLE</p>
+                        <p class="text-base font-medium text-primary">Introduction to Cloud Architecture</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-tertiary mb-xs">SPEAKER</p>
+                        <p class="text-base font-medium text-primary">Dr. Sarah Johnson</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-tertiary mb-xs">TIME</p>
+                        <p class="text-base font-medium text-primary">14:00 - 15:30</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-tertiary mb-xs">LOCATION</p>
+                        <p class="text-base font-medium text-primary">Conference Hall A</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Modal -->
+        <div class="modal" style="position: static; max-width: 600px; margin: 0 auto;" id="feedbackModal">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h3 class="modal-title text-xs">SESSION FEEDBACK</h3>
+                <button class="modal-close" onclick="closeFeedback()" aria-label="Close">×</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form id="feedbackForm">
+                    <!-- Star Rating -->
+                    <div class="form-group">
+                        <label class="form-label text-center block">RATE THIS SESSION</label>
+                        <div class="star-rating" id="starRating">
+                            <button type="button" class="star" data-rating="1" onclick="setRating(1)" aria-label="1 star">☆</button>
+                            <button type="button" class="star" data-rating="2" onclick="setRating(2)" aria-label="2 stars">☆</button>
+                            <button type="button" class="star" data-rating="3" onclick="setRating(3)" aria-label="3 stars">☆</button>
+                            <button type="button" class="star" data-rating="4" onclick="setRating(4)" aria-label="4 stars">☆</button>
+                            <button type="button" class="star" data-rating="5" onclick="setRating(5)" aria-label="5 stars">☆</button>
+                        </div>
+                        <input type="hidden" id="ratingValue" name="rating" value="0">
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="form-group">
+                        <label class="form-label" for="comments">COMMENTS:</label>
+                        <textarea 
+                            class="form-input form-textarea" 
+                            id="comments" 
+                            name="comments"
+                            placeholder="Share your thoughts about this session..."
+                            rows="5"
+                        ></textarea>
+                    </div>
+                </form>
+
+                <!-- Success Message (Hidden by default) -->
+                <div class="hidden text-center" id="successMessage">
+                    <div class="text-success mb-md" style="font-size: 3rem;">✓</div>
+                    <h4 class="text-h4 mb-sm">Thank you for your feedback!</h4>
+                    <p class="text-secondary text-sm">Your response has been recorded successfully.</p>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer" id="modalFooter">
+                <button type="submit" form="feedbackForm" class="btn btn-primary">SUBMIT</button>
+                <button type="button" class="btn btn-secondary" onclick="cancelFeedback()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRating = 0;
+
+        // Star rating functionality
+        function setRating(rating) {
+            currentRating = rating;
+            document.getElementById('ratingValue').value = rating;
+            updateStars(rating);
+        }
+
+        function updateStars(rating) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.textContent = '★';
+                    star.classList.add('filled');
+                } else {
+                    star.textContent = '☆';
+                    star.classList.remove('filled');
+                }
+            });
+        }
+
+        // Hover effects for stars
+        document.querySelectorAll('.star').forEach((star, index) => {
+            star.addEventListener('mouseenter', () => {
+                if (currentRating === 0) {
+                    updateStars(index + 1);
+                }
+            });
+            
+            star.addEventListener('mouseleave', () => {
+                if (currentRating === 0) {
+                    updateStars(0);
+                } else {
+                    updateStars(currentRating);
+                }
+            });
+        });
+
+        // Form submission
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate rating
+            if (currentRating === 0) {
+                // Create alert element
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-error mb-md animate-slide-down';
+                alertDiv.textContent = 'Please select a rating before submitting.';
+                
+                // Insert before form
+                const modalBody = document.querySelector('.modal-body');
+                modalBody.insertBefore(alertDiv, modalBody.firstChild);
+                
+                // Remove after 3 seconds
+                setTimeout(() => alertDiv.remove(), 3000);
+                return;
+            }
+            
+            // Show success message
+            document.getElementById('feedbackForm').style.display = 'none';
+            document.getElementById('successMessage').classList.remove('hidden');
+            document.getElementById('modalFooter').style.display = 'none';
+            
+            // Reset form after delay
+            setTimeout(() => {
+                resetForm();
+            }, 3000);
+        });
+
+        // Cancel feedback
+        function cancelFeedback() {
+            if (confirm('Are you sure you want to cancel? Your feedback will not be saved.')) {
+                resetForm();
+            }
+        }
+
+        // Close modal
+        function closeFeedback() {
+            if (currentRating > 0 || document.getElementById('comments').value.trim() !== '') {
+                if (confirm('You have unsaved feedback. Are you sure you want to close?')) {
+                    resetForm();
+                }
+            } else {
+                resetForm();
+            }
+        }
+
+        // Reset form
+        function resetForm() {
+            currentRating = 0;
+            document.getElementById('ratingValue').value = 0;
+            document.getElementById('comments').value = '';
+            updateStars(0);
+            document.getElementById('feedbackForm').style.display = 'block';
+            document.getElementById('successMessage').classList.add('hidden');
+            document.getElementById('modalFooter').style.display = 'flex';
+            
+            // Remove any alerts
+            document.querySelectorAll('.alert').forEach(alert => alert.remove());
+        }
+
+        // Dark mode toggle (optional)
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            html.setAttribute('data-theme', currentTheme === 'dark' ? '' : 'dark');
+            localStorage.setItem('theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+
+        // Check for saved theme preference
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        });
+    </script>
+</body>
+</html>
