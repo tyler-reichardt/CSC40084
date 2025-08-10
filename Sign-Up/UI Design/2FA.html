@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two-Factor Authentication Setup - BookMeIn2</title>
+    <style>
+        /* Import the BookMeIn2 Style Library */
+        /* BookMeIn2 B2B Style Library v1.0 */
+        :root {
+          /* Primary Colors */
+          --primary-50: #eff6ff;
+          --primary-100: #dbeafe;
+          --primary-200: #bfdbfe;
+          --primary-300: #93c5fd;
+          --primary-400: #60a5fa;
+          --primary-500: #3b82f6;
+          --primary-600: #2563eb;
+          --primary-700: #1d4ed8;
+          --primary-800: #1e40af;
+          --primary-900: #1e3a8a;
+
+          /* Status Colors */
+          --success-50: #ecfdf5;
+          --success-500: #10b981;
+          --success-600: #059669;
+          --warning-50: #fffbeb;
+          --warning-500: #f59e0b;
+          --warning-600: #d97706;
+          --error-50: #fef2f2;
+          --error-500: #ef4444;
+          --error-600: #dc2626;
+          --info-50: #f0f9ff;
+          --info-500: #06b6d4;
+          --info-600: #0891b2;
+
+          /* Neutral Colors */
+          --neutral-50: #f8fafc;
+          --neutral-100: #f1f5f9;
+          --neutral-200: #e2e8f0;
+          --neutral-300: #cbd5e1;
+          --neutral-400: #94a3b8;
+          --neutral-500: #64748b;
+          --neutral-600: #475569;
+          --neutral-700: #334155;
+          --neutral-800: #1e293b;
+          --neutral-900: #0f172a;
+
+          /* Semantic Light Mode Variables */
+          --bg-primary: var(--neutral-50);
+          --bg-secondary: var(--neutral-100);
+          --bg-tertiary: var(--neutral-200);
+          --text-primary: var(--neutral-900);
+          --text-secondary: var(--neutral-600);
+          --text-tertiary: var(--neutral-400);
+          --border-color: var(--neutral-200);
+          --border-focus: var(--primary-500);
+
+          /* Shadows */
+          --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+          --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+          --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+          --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+          --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+
+          /* Spacing Scale */
+          --spacing-xs: 0.25rem;
+          --spacing-sm: 0.5rem;
+          --spacing-md: 1rem;
+          --spacing-lg: 1.5rem;
+          --spacing-xl: 2rem;
+          --spacing-2xl: 3rem;
+          --spacing-3xl: 4rem;
+
+          /* Border Radius */
+          --radius-sm: 0.25rem;
+          --radius: 0.5rem;
+          --radius-md: 0.75rem;
+          --radius-lg: 1rem;
+          --radius-xl: 1.5rem;
+          --radius-full: 9999px;
+
+          /* Typography */
+          --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          --font-mono: 'Fira Code', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+
+          /* Transitions */
+          --transition-fast: 150ms ease-out;
+          --transition: 200ms ease;
+          --transition-slow: 300ms ease;
+        }
+
+        /* Base Styles */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: var(--font-family);
+          line-height: 1.5;
+          color: var(--text-primary);
+          background-color: var(--bg-primary);
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: var(--spacing-lg);
+        }
+
+        /* Typography */
+        .text-h3 { font-size: 1.875rem; font-weight: 600; line-height: 1.4; }
+        .text-sm { font-size: 0.875rem; line-height: 1.5; }
+        .text-xs { font-size: 0.75rem; line-height: 1.4; }
+        .text-center { text-align: center; }
+        .text-secondary { color: var(--text-secondary); }
+        .font-medium { font-weight: 500; }
+        .font-mono { font-family: var(--font-mono); }
+
+        /* Spacing */
+        .mb-sm { margin-bottom: var(--spacing-sm); }
+        .mb-md { margin-bottom: var(--spacing-md); }
+        .mb-lg { margin-bottom: var(--spacing-lg); }
+        .mb-xl { margin-bottom: var(--spacing-xl); }
+        .mt-lg { margin-top: var(--spacing-lg); }
+
+        /* Form Elements */
+        .form-input {
+          width: 100%;
+          padding: 0.75rem var(--spacing-md);
+          border: 2px solid var(--border-color);
+          border-radius: var(--radius);
+          background-color: var(--bg-primary);
+          color: var(--text-primary);
+          font-size: 0.875rem;
+          font-family: inherit;
+          transition: border-color var(--transition);
+          min-height: 44px;
+        }
+
+        .form-input:focus {
+          outline: none;
+          border-color: var(--border-focus);
+        }
+
+        /* Buttons */
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--spacing-sm);
+          padding: 0.75rem 1.5rem;
+          border: none;
+          border-radius: var(--radius);
+          font-size: 0.875rem;
+          font-weight: 500;
+          font-family: inherit;
+          line-height: 1;
+          cursor: pointer;
+          transition: all var(--transition);
+          text-decoration: none;
+          white-space: nowrap;
+          min-height: 44px;
+        }
+
+        .btn:focus {
+          outline: 2px solid var(--border-focus);
+          outline-offset: 2px;
+        }
+
+        .btn-primary {
+          background-color: var(--primary-600);
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background-color: var(--primary-700);
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+          background-color: var(--bg-tertiary);
+          color: var(--text-primary);
+          border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+          background-color: var(--bg-secondary);
+          border-color: var(--primary-300);
+        }
+
+        .btn-sm {
+          padding: 0.5rem 1rem;
+          font-size: 0.75rem;
+          min-height: 36px;
+        }
+
+        /* Custom Styles */
+        .auth-container {
+          background: white;
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-xl);
+          width: 100%;
+          max-width: 600px;
+          padding: var(--spacing-2xl);
+        }
+
+        .options-container {
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          gap: var(--spacing-xl);
+          align-items: start;
+          margin: var(--spacing-xl) 0;
+        }
+
+        .option {
+          padding: var(--spacing-md);
+          background: var(--bg-secondary);
+          border-radius: var(--radius);
+          border: 2px solid var(--border-color);
+        }
+
+        .option-title {
+          font-weight: 600;
+          margin-bottom: var(--spacing-sm);
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-sm);
+        }
+
+        .option-content {
+          font-size: 0.875rem;
+          color: var(--text-secondary);
+        }
+
+        .option-content ul {
+          margin: var(--spacing-sm) 0;
+          padding-left: var(--spacing-lg);
+        }
+
+        .option-content li {
+          margin-bottom: var(--spacing-xs);
+        }
+
+        .qr-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: var(--spacing-lg);
+        }
+
+        .qr-code {
+          width: 200px;
+          height: 200px;
+          background: white;
+          border: 2px solid var(--border-color);
+          border-radius: var(--radius);
+          padding: var(--spacing-md);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: var(--spacing-md);
+        }
+
+        .qr-code svg {
+          width: 100%;
+          height: 100%;
+        }
+
+        .setup-key-group {
+          display: flex;
+          gap: var(--spacing-sm);
+          margin-top: var(--spacing-md);
+        }
+
+        .setup-key-input {
+          flex: 1;
+          padding: 0.5rem var(--spacing-sm);
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius-sm);
+          font-family: var(--font-mono);
+          font-size: 0.75rem;
+          background: var(--bg-primary);
+        }
+
+        .verification-section {
+          border-top: 1px solid var(--border-color);
+          padding-top: var(--spacing-xl);
+          margin-top: var(--spacing-xl);
+        }
+
+        .verification-input-group {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-md);
+          margin-bottom: var(--spacing-lg);
+        }
+
+        .verification-input {
+          flex: 1;
+          max-width: 300px;
+          text-align: center;
+          font-size: 1.125rem;
+          letter-spacing: 0.25em;
+          font-family: var(--font-mono);
+          margin: 0 auto;
+        }
+
+        .button-group {
+          display: flex;
+          gap: var(--spacing-md);
+          justify-content: center;
+        }
+
+        .icon {
+          width: 20px;
+          height: 20px;
+          display: inline-block;
+        }
+
+        .lock-icon::before {
+          content: '🔒';
+          font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+          .options-container {
+            grid-template-columns: 1fr;
+          }
+
+          .auth-container {
+            padding: var(--spacing-lg);
+          }
+
+          .button-group {
+            flex-direction: column;
+          }
+
+          .btn {
+            width: 100%;
+          }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h1 class="text-h3 text-center mb-md">Set up Two-Factor Authentication (2FA)</h1>
+        <p class="text-center text-secondary mb-xl">
+            Two Factor 2FA: The 'Now rest team no same nude implications s aid 
+            outputs while die the authenticator app to loiter, bnd link up your 
+            account in 5FA factory
+        </p>
+
+        <div class="options-container">
+            <!-- Option 1: QR Code -->
+            <div class="option">
+                <div class="option-title">
+                    <span class="lock-icon"></span>
+                    Option 1: Scan QR Code
+                </div>
+                <div class="option-content">
+                    <ul>
+                        <li>Your factoramencoid the your password are Hanks in modal art code authenticoer.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- QR Code Display -->
+            <div class="qr-container">
+                <div class="qr-code">
+                    <!-- QR Code SVG -->
+                    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="200" height="200" fill="white"/>
+                        <!-- Simplified QR code pattern -->
+                        <g fill="black">
+                            <!-- Top-left position marker -->
+                            <rect x="20" y="20" width="60" height="60"/>
+                            <rect x="30" y="30" width="40" height="40" fill="white"/>
+                            <rect x="40" y="40" width="20" height="20"/>
+                            
+                            <!-- Top-right position marker -->
+                            <rect x="120" y="20" width="60" height="60"/>
+                            <rect x="130" y="30" width="40" height="40" fill="white"/>
+                            <rect x="140" y="40" width="20" height="20"/>
+                            
+                            <!-- Bottom-left position marker -->
+                            <rect x="20" y="120" width="60" height="60"/>
+                            <rect x="30" y="130" width="40" height="40" fill="white"/>
+                            <rect x="40" y="140" width="20" height="20"/>
+                            
+                            <!-- Random pattern in center -->
+                            <rect x="90" y="90" width="10" height="10"/>
+                            <rect x="110" y="90" width="10" height="10"/>
+                            <rect x="90" y="110" width="10" height="10"/>
+                            <rect x="100" y="100" width="10" height="10"/>
+                            <rect x="95" y="50" width="10" height="20"/>
+                            <rect x="95" y="130" width="10" height="20"/>
+                            <rect x="50" y="95" width="20" height="10"/>
+                            <rect x="130" y="95" width="20" height="10"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class="text-center">
+                    <span class="text-xs text-secondary">QR Code Placeholder</span>
+                </div>
+            </div>
+
+            <!-- Option 2: Manual Entry -->
+            <div class="option">
+                <div class="option-title">
+                    Option 2: Enter Setup Key
+                </div>
+                <div class="option-content">
+                    <div class="setup-key-group">
+                        <input 
+                            type="text" 
+                            class="setup-key-input" 
+                            value="Setup Key" 
+                            readonly
+                        />
+                        <button class="btn btn-secondary btn-sm" onclick="copySetupKey()">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Verification Section -->
+        <div class="verification-section">
+            <div class="verification-input-group">
+                <input 
+                    type="text" 
+                    class="form-input verification-input" 
+                    placeholder="Enter Code" 
+                    maxlength="6"
+                    id="verificationCode"
+                />
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="verifyAndEnable()">
+                    Verify and Enable 2FA
+                </button>
+                <button class="btn btn-secondary" onclick="cancel()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Copy setup key to clipboard
+        function copySetupKey() {
+            const setupKeyInput = document.querySelector('.setup-key-input');
+            setupKeyInput.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const copyBtn = event.target;
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+            }, 2000);
+        }
+
+        // Verify and enable 2FA
+        function verifyAndEnable() {
+            const code = document.getElementById('verificationCode').value;
+            
+            if (code.length !== 6) {
+                alert('Please enter a 6-digit verification code');
+                return;
+            }
+            
+            // Check if code contains only numbers
+            if (!/^\d{6}$/.test(code)) {
+                alert('Verification code must contain only numbers');
+                return;
+            }
+            
+            console.log('Verifying code:', code);
+            alert('2FA has been successfully enabled! (Demo)');
+        }
+
+        // Cancel setup
+        function cancel() {
+            if (confirm('Are you sure you want to cancel 2FA setup?')) {
+                console.log('2FA setup cancelled');
+                // In a real app, this would navigate back or close the modal
+                window.history.back();
+            }
+        }
+
+        // Auto-format verification code input
+        document.getElementById('verificationCode').addEventListener('input', function(e) {
+            // Remove non-numeric characters
+            this.value = this.value.replace(/\D/g, '');
+            
+            // Limit to 6 digits
+            if (this.value.length > 6) {
+                this.value = this.value.slice(0, 6);
+            }
+        });
+
+        // Allow Enter key to submit verification
+        document.getElementById('verificationCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyAndEnable();
+            }
+        });
+    </script>
+</body>
+</html>

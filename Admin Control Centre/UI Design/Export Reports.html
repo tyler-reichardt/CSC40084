@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Reports</title>
+    <link rel="stylesheet" href="../../bookmein2-style-library.css">
+</head>
+<body>
+    <div class="container py-xl">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <div class="card-content p-xl">
+                <h1 class="text-h2 text-center mb-xl">Download Reports</h1>
+                
+                <!-- Session Selector -->
+                <div class="form-group mb-xl">
+                    <div class="flex items-center gap-md">
+                        <div class="flex items-center justify-center" style="width: 40px; height: 40px;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                        </div>
+                        <select class="form-input form-select flex-1">
+                            <option value="">Select Session</option>
+                            <option value="keynote">Keynote - Opening Ceremony</option>
+                            <option value="workshop1">Workshop 1 - Introduction to AI</option>
+                            <option value="workshop2">Workshop 2 - Advanced Analytics</option>
+                            <option value="panel1">Panel Discussion - Future of Tech</option>
+                            <option value="all">All Sessions</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Report Download Options -->
+                <div class="data-list">
+                    <!-- Audience Engagement Report -->
+                    <div class="data-list-item">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Audience Engagement</span>
+                            <button class="btn btn-primary btn-sm">Download (CSV)</button>
+                        </div>
+                    </div>
+
+                    <!-- Q&A Transcript Report -->
+                    <div class="data-list-item">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Q&A Transcript</span>
+                            <button class="btn btn-primary btn-sm">Download (CSV)</button>
+                        </div>
+                    </div>
+
+                    <!-- Poll Results Report -->
+                    <div class="data-list-item">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Poll Results</span>
+                            <button class="btn btn-primary btn-sm">Download (CSV)</button>
+                        </div>
+                    </div>
+
+                    <!-- Full Attendance Log -->
+                    <div class="data-list-item">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">Full Attendance Log</span>
+                            <button class="btn btn-primary btn-sm">Download (CSV)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

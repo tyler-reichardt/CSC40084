@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback & Reporting Hub - BookMeIn2</title>
+    <link rel="stylesheet" href="bookmein2-style-library.css">
+    <style>
+        /* Import the BookMeIn2 Style Library (embedded for demo) */
+        :root {
+          --primary-50: #eff6ff;
+          --primary-100: #dbeafe;
+          --primary-200: #bfdbfe;
+          --primary-300: #93c5fd;
+          --primary-400: #60a5fa;
+          --primary-500: #3b82f6;
+          --primary-600: #2563eb;
+          --primary-700: #1d4ed8;
+          --primary-800: #1e40af;
+          --primary-900: #1e3a8a;
+          --success-50: #ecfdf5;
+          --success-500: #10b981;
+          --success-600: #059669;
+          --warning-50: #fffbeb;
+          --warning-500: #f59e0b;
+          --warning-600: #d97706;
+          --error-50: #fef2f2;
+          --error-500: #ef4444;
+          --error-600: #dc2626;
+          --info-50: #f0f9ff;
+          --info-500: #06b6d4;
+          --info-600: #0891b2;
+          --neutral-50: #f8fafc;
+          --neutral-100: #f1f5f9;
+          --neutral-200: #e2e8f0;
+          --neutral-300: #cbd5e1;
+          --neutral-400: #94a3b8;
+          --neutral-500: #64748b;
+          --neutral-600: #475569;
+          --neutral-700: #334155;
+          --neutral-800: #1e293b;
+          --neutral-900: #0f172a;
+          --bg-primary: var(--neutral-50);
+          --bg-secondary: var(--neutral-100);
+          --bg-tertiary: var(--neutral-200);
+          --text-primary: var(--neutral-900);
+          --text-secondary: var(--neutral-600);
+          --text-tertiary: var(--neutral-400);
+          --border-color: var(--neutral-200);
+          --border-focus: var(--primary-500);
+          --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+          --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+          --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+          --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+          --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+          --spacing-xs: 0.25rem;
+          --spacing-sm: 0.5rem;
+          --spacing-md: 1rem;
+          --spacing-lg: 1.5rem;
+          --spacing-xl: 2rem;
+          --spacing-2xl: 3rem;
+          --spacing-3xl: 4rem;
+          --radius-sm: 0.25rem;
+          --radius: 0.5rem;
+          --radius-md: 0.75rem;
+          --radius-lg: 1rem;
+          --radius-xl: 1.5rem;
+          --radius-full: 9999px;
+          --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          --transition-fast: 150ms ease-out;
+          --transition: 200ms ease;
+          --transition-slow: 300ms ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+          font-family: var(--font-family); 
+          line-height: 1.5; 
+          color: var(--text-primary); 
+          background: linear-gradient(135deg, var(--neutral-50) 0%, var(--primary-50) 100%);
+          min-height: 100vh;
+        }
+
+        /* Container */
+        .container {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: var(--spacing-xl);
+        }
+
+        /* Header */
+        .hub-header {
+          text-align: center;
+          margin-bottom: var(--spacing-2xl);
+        }
+
+        .hub-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin-bottom: var(--spacing-sm);
+          letter-spacing: -0.02em;
+        }
+
+        .hub-subtitle {
+          color: var(--text-secondary);
+          font-size: 1.125rem;
+        }
+
+        /* KPI Cards */
+        .kpi-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          gap: var(--spacing-lg);
+          margin-bottom: var(--spacing-xl);
+        }
+
+        .kpi-card {
+          background: white;
+          border-radius: var(--radius-lg);
+          padding: var(--spacing-lg);
+          box-shadow: var(--shadow-md);
+          position: relative;
+          overflow: hidden;
+          transition: all var(--transition);
+        }
+
+        .kpi-card:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-lg);
+        }
+
+        .kpi-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, var(--primary-400), var(--primary-600));
+        }
+
+        .kpi-card.success::before {
+          background: linear-gradient(90deg, var(--success-400), var(--success-600));
+        }
+
+        .kpi-card.warning::before {
+          background: linear-gradient(90deg, var(--warning-400), var(--warning-600));
+        }
+
+        .kpi-card.info::before {
+          background: linear-gradient(90deg, var(--info-400), var(--info-600));
+        }
+
+        .kpi-label {
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--text-tertiary);
+          margin-bottom: var(--spacing-sm);
+          font-weight: 600;
+        }
+
+        .kpi-value {
+          font-size: 2.25rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          line-height: 1;
+          margin-bottom: var(--spacing-sm);
+          display: flex;
+          align-items: baseline;
+          gap: var(--spacing-xs);
+        }
+
+        .kpi-unit {
+          font-size: 1.25rem;
+          font-weight: 400;
+          color: var(--text-secondary);
+        }
+
+        .kpi-change {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--spacing-xs);
+          padding: 0.25rem 0.5rem;
+          border-radius: var(--radius-full);
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+
+        .kpi-change.positive {
+          background: var(--success-50);
+          color: var(--success-600);
+        }
+
+        .kpi-change.negative {
+          background: var(--error-50);
+          color: var(--error-600);
+        }
+
+        /* Filter Section */
+        .filter-section {
+          background: white;
+          border-radius: var(--radius-lg);
+          padding: var(--spacing-lg);
+          box-shadow: var(--shadow);
+          margin-bottom: var(--spacing-xl);
+          display: flex;
+          gap: var(--spacing-md);
+          flex-wrap: wrap;
+          align-items: center;
+        }
+
+        .filter-group {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-xs);
+          flex: 1;
+          min-width: 200px;
+        }
+
+        .filter-label {
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--text-tertiary);
+          font-weight: 600;
+        }
+
+        .filter-select {
+          padding: 0.625rem var(--spacing-md);
+          border: 2px solid var(--border-color);
+          border-radius: var(--radius);
+          background: white;
+          color: var(--text-primary);
+          font-size: 0.875rem;
+          font-family: inherit;
+          transition: border-color var(--transition);
+          cursor: pointer;
+        }
+
+        .filter-select:focus {
+          outline: none;
+          border-color: var(--border-focus);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Charts Grid */
+        .charts-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--spacing-xl);
+          margin-bottom: var(--spacing-xl);
+        }
+
+        .chart-card {
+          background: white;
+          border-radius: var(--radius-lg);
+          padding: var(--spacing-lg);
+          box-shadow: var(--shadow-md);
+        }
+
+        .chart-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: var(--spacing-lg);
+        }
+
+        .chart-title {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+
+        .chart-subtitle {
+          font-size: 0.75rem;
+          color: var(--text-tertiary);
+        }
+
+        /* Bar Chart */
+        .bar-chart {
+          height: 250px;
+          display: flex;
+          align-items: flex-end;
+          gap: var(--spacing-sm);
+          padding: var(--spacing-md) 0;
+        }
+
+        .bar {
+          flex: 1;
+          background: linear-gradient(to top, var(--primary-400), var(--primary-600));
+          border-radius: var(--radius) var(--radius) 0 0;
+          position: relative;
+          transition: all var(--transition);
+          cursor: pointer;
+        }
+
+        .bar:hover {
+          transform: translateY(-4px);
+          filter: brightness(1.1);
+        }
+
+        .bar-label {
+          position: absolute;
+          bottom: -25px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 0.75rem;
+          color: var(--text-secondary);
+          white-space: nowrap;
+        }
+
+        .bar-value {
+          position: absolute;
+          top: -20px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+
+        /* Word Cloud */
+        .word-cloud {
+          padding: var(--spacing-xl);
+          display: flex;
+          flex-wrap: wrap;
+          gap: var(--spacing-md);
+          align-items: center;
+          justify-content: center;
+          min-height: 300px;
+        }
+
+        .word {
+          display: inline-block;
+          padding: var(--spacing-xs) var(--spacing-sm);
+          border-radius: var(--radius);
+          cursor: pointer;
+          transition: all var(--transition);
+          position: relative;
+        }
+
+        .word:hover {
+          transform: scale(1.1);
+          z-index: 10;
+        }
+
+        .word.size-xl {
+          font-size: 2rem;
+          font-weight: 700;
+          color: var(--primary-600);
+        }
+
+        .word.size-lg {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: var(--primary-500);
+        }
+
+        .word.size-md {
+          font-size: 1.125rem;
+          font-weight: 500;
+          color: var(--text-primary);
+        }
+
+        .word.size-sm {
+          font-size: 0.875rem;
+          font-weight: 400;
+          color: var(--text-secondary);
+        }
+
+        .word.highlight {
+          background: var(--primary-50);
+        }
+
+        /* Report Section */
+        .report-section {
+          background: white;
+          border-radius: var(--radius-lg);
+          padding: var(--spacing-xl);
+          box-shadow: var(--shadow-md);
+          margin-bottom: var(--spacing-xl);
+        }
+
+        .report-header {
+          text-align: center;
+          margin-bottom: var(--spacing-xl);
+        }
+
+        .report-title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: var(--spacing-sm);
+        }
+
+        .report-controls {
+          display: flex;
+          gap: var(--spacing-md);
+          max-width: 600px;
+          margin: 0 auto;
+        }
+
+        .report-select {
+          flex: 1;
+          padding: 0.875rem var(--spacing-md);
+          border: 2px solid var(--border-color);
+          border-radius: var(--radius);
+          background: white;
+          color: var(--text-primary);
+          font-size: 0.875rem;
+          font-family: inherit;
+          transition: border-color var(--transition);
+        }
+
+        .btn {
+          padding: 0.875rem 1.5rem;
+          border: none;
+          border-radius: var(--radius);
+          font-size: 0.875rem;
+          font-weight: 600;
+          font-family: inherit;
+          cursor: pointer;
+          transition: all var(--transition);
+          display: inline-flex;
+          align-items: center;
+          gap: var(--spacing-sm);
+        }
+
+        .btn-primary {
+          background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+          color: white;
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: var(--shadow-md);
+        }
+
+        /* Additional Analytics */
+        .analytics-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          gap: var(--spacing-lg);
+          margin-bottom: var(--spacing-xl);
+        }
+
+        .analytics-card {
+          background: white;
+          border-radius: var(--radius-lg);
+          padding: var(--spacing-lg);
+          box-shadow: var(--shadow);
+        }
+
+        .analytics-title {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: var(--spacing-md);
+          text-transform: uppercase;
+          letter-spacing: 0.025em;
+        }
+
+        .analytics-list {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-sm);
+        }
+
+        .analytics-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--spacing-sm);
+          background: var(--bg-secondary);
+          border-radius: var(--radius);
+        }
+
+        .analytics-item:hover {
+          background: var(--bg-tertiary);
+        }
+
+        .item-label {
+          font-size: 0.875rem;
+          color: var(--text-primary);
+        }
+
+        .item-value {
+          font-weight: 600;
+          color: var(--primary-600);
+        }
+
+        .progress-bar {
+          width: 100%;
+          height: 8px;
+          background: var(--bg-tertiary);
+          border-radius: var(--radius-full);
+          overflow: hidden;
+          margin-top: var(--spacing-xs);
+        }
+
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, var(--primary-400), var(--primary-600));
+          border-radius: var(--radius-full);
+          transition: width var(--transition-slow);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+          .charts-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .kpi-grid {
+            grid-template-columns: 1fr;
+          }
+          
+          .filter-section {
+            flex-direction: column;
+          }
+          
+          .hub-title {
+            font-size: 1.875rem;
+          }
+        }
+
+        .icon-star::before { content: '⭐'; }
+        .icon-up::before { content: '↑'; }
+        .icon-down::before { content: '↓'; }
+        .icon-download::before { content: '⬇'; }
+        .icon-chart::before { content: '📊'; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="hub-header">
+            <h1 class="hub-title">FEEDBACK & REPORTING HUB</h1>
+            <p class="hub-subtitle">Annual Tech Conference 2025 - Analytics Dashboard</p>
+        </header>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-label">Overall Event Rating</div>
+                <div class="kpi-value">
+                    4.5<span class="kpi-unit">/5</span>
+                </div>
+                <div class="kpi-change positive">
+                    <span class="icon-up"></span> +0.3 from last event
+                </div>
+            </div>
+
+            <div class="kpi-card success">
+                <div class="kpi-label">Total Feedback Submissions</div>
+                <div class="kpi-value">
+                    1,200
+                </div>
+                <div class="kpi-change positive">
+                    <span class="icon-up"></span> 85% response rate
+                </div>
+            </div>
+
+            <div class="kpi-card warning">
+                <div class="kpi-label">Delegate Engagement Score</div>
+                <div class="kpi-value">
+                    7.8<span class="kpi-unit">/10</span>
+                </div>
+                <div class="kpi-change positive">
+                    <span class="icon-up"></span> +1.2 points
+                </div>
+            </div>
+
+            <div class="kpi-card info">
+                <div class="kpi-label">Most Successful Talk</div>
+                <div class="kpi-value" style="font-size: 1.25rem;">
+                    Keynote Address
+                </div>
+                <div class="kpi-change positive">
+                    <span class="icon-star"></span> 4.9/5 rating
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-group">
+                <label class="filter-label">Filter by Date</label>
+                <select class="filter-select" id="dateFilter">
+                    <option value="all">All Days</option>
+                    <option value="day1">Day 1 - March 15</option>
+                    <option value="day2">Day 2 - March 16</option>
+                    <option value="day3">Day 3 - March 17</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Filter by Event</label>
+                <select class="filter-select" id="eventFilter">
+                    <option value="all">All Events</option>
+                    <option value="keynote">Keynotes</option>
+                    <option value="workshop">Workshops</option>
+                    <option value="panel">Panel Discussions</option>
+                    <option value="networking">Networking Sessions</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Time Period</label>
+                <select class="filter-select" id="timeFilter">
+                    <option value="current">Current Event</option>
+                    <option value="last30">Last 30 Days</option>
+                    <option value="last90">Last 90 Days</option>
+                    <option value="year">This Year</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Rating Distribution Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Rating Distribution</div>
+                        <div class="chart-subtitle">Overall satisfaction scores</div>
+                    </div>
+                    <span class="icon-chart" style="font-size: 1.5rem;"></span>
+                </div>
+                <div class="bar-chart">
+                    <div class="bar" style="height: 15%;">
+                        <span class="bar-value">45</span>
+                        <span class="bar-label">1★</span>
+                    </div>
+                    <div class="bar" style="height: 20%;">
+                        <span class="bar-value">60</span>
+                        <span class="bar-label">2★</span>
+                    </div>
+                    <div class="bar" style="height: 35%;">
+                        <span class="bar-value">180</span>
+                        <span class="bar-label">3★</span>
+                    </div>
+                    <div class="bar" style="height: 65%;">
+                        <span class="bar-value">415</span>
+                        <span class="bar-label">4★</span>
+                    </div>
+                    <div class="bar" style="height: 85%; background: linear-gradient(to top, var(--success-400), var(--success-600));">
+                        <span class="bar-value">500</span>
+                        <span class="bar-label">5★</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Word Cloud -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div>
+                        <div class="chart-title">Feedback Word Cloud</div>
+                        <div class="chart-subtitle">Most mentioned keywords</div>
+                    </div>
+                </div>
+                <div class="word-cloud">
+                    <span class="word size-xl highlight">innovative</span>
+                    <span class="word size-lg">engaging</span>
+                    <span class="word size-md">informative</span>
+                    <span class="word size-xl">excellent</span>
+                    <span class="word size-sm">networking</span>
+                    <span class="word size-lg highlight">inspiring</span>
+                    <span class="word size-md">professional</span>
+                    <span class="word size-sm">organized</span>
+                    <span class="word size-lg">insightful</span>
+                    <span class="word size-md">valuable</span>
+                    <span class="word size-xl highlight">outstanding</span>
+                    <span class="word size-sm">interactive</span>
+                    <span class="word size-md">practical</span>
+                    <span class="word size-lg">knowledge</span>
+                    <span class="word size-sm">speakers</span>
+                    <span class="word size-md">content</span>
+                    <span class="word size-lg highlight">quality</span>
+                    <span class="word size-sm">venue</span>
+                    <span class="word size-md">technology</span>
+                    <span class="word size-sm">future</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Analytics -->
+        <div class="analytics-grid">
+            <!-- Top Sessions -->
+            <div class="analytics-card">
+                <h3 class="analytics-title">Top Rated Sessions</h3>
+                <div class="analytics-list">
+                    <div class="analytics-item">
+                        <span class="item-label">Opening Keynote: Future of AI</span>
+                        <span class="item-value">4.9/5</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="item-label">Cloud Architecture Workshop</span>
+                        <span class="item-value">4.8/5</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="item-label">Panel: Sustainability in Tech</span>
+                        <span class="item-value">4.7/5</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="item-label">Cybersecurity Best Practices</span>
+                        <span class="item-value">4.6/5</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="item-label">Innovation Showcase</span>
+                        <span class="item-value">4.5/5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engagement Metrics -->
+            <div class="analytics-card">
+                <h3 class="analytics-title">Engagement Metrics</h3>
+                <div class="analytics-list">
+                    <div class="analytics-item">
+                        <span class="item-label">Q&A Participation</span>
+                        <span class="item-value">78%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 78%;"></div>
+                    </div>
+                    <div class="analytics-item" style="margin-top: var(--spacing-md);">
+                        <span class="item-label">Session Attendance</span>
+                        <span class="item-value">92%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 92%;"></div>
+                    </div>
+                    <div class="analytics-item" style="margin-top: var(--spacing-md);">
+                        <span class="item-label">App Usage</span>
+                        <span class="item-value">85%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%;"></div>
+                    </div>
+                    <div class="analytics-item" style="margin-top: var(--spacing-md);">
+                        <span class="item-label">Networking Events</span>
+                        <span class="item-value">71%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 71%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Categories -->
+            <div class="analytics-card">
+                <h3 class="analytics-title">Feedback by Category</h3>
+                <div class="analytics-list">
+                    <div class="analytics-item">
+                        <span class="item-label">Content Quality</span>
+                        <span class="item-value">4.6/5</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="item-label">Speaker Performance</span>
+                        <span class="item-value">4.7/5</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="item-label">Venue & Facilities</span>
+                        <span class="item-value">4.3/5</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="item-label">Organization</span>
+                        <span class="item-value">4.5/5</span>
+                    </div>
+                    <div class="analytics-item">
+                        <span class="item-label">Networking Opportunities</span>
+                        <span class="item-value">4.4/5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Report Generation Section -->
+        <div class="report-section">
+            <div class="report-header">
+                <h2 class="report-title">Generate Custom Reports</h2>
+                <p style="color: var(--text-secondary); margin-bottom: var(--spacing-lg);">
+                    Select report type and download comprehensive analytics
+                </p>
+            </div>
+            <div class="report-controls">
+                <select class="report-select" id="reportType">
+                    <option value="conference">Entire Conference Report</option>
+                    <option value="individual">Individual Presentation Report</option>
+                    <option value="speaker">Speaker Feedback Report</option>
+                    <option value="engagement">Engagement Analytics Report</option>
+                    <option value="comparison">Year-over-Year Comparison</option>
+                    <option value="executive">Executive Summary</option>
+                </select>
+                <button class="btn btn-primary" onclick="generateReport()">
+                    <span class="icon-download"></span>
+                    Generate & Download Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Animate numbers on load
+        function animateValue(element, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                element.textContent = Math.floor(progress * (end - start) + start).toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Animate KPI values
+        window.addEventListener('load', () => {
+            // Animate feedback submissions
+            const feedbackElement = document.querySelector('.kpi-card.success .kpi-value');
+            animateValue(feedbackElement, 0, 1200, 2000);
+        });
+
+        // Word cloud interactions
+        document.querySelectorAll('.word').forEach(word => {
+            word.addEventListener('click', function() {
+                // Toggle highlight
+                this.classList.toggle('highlight');
+                
+                // Show word frequency (demo)
+                const size = this.classList.contains('size-xl') ? '450+' :
+                           this.classList.contains('size-lg') ? '200-450' :
+                           this.classList.contains('size-md') ? '100-200' :
+                           '50-100';
+                console.log(`"${this.textContent}" mentioned ${size} times`);
+            });
+        });
+
+        // Filter interactions
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', function() {
+                console.log(`Filter changed: ${this.id} = ${this.value}`);
+                // In production, this would reload data
+                updateCharts();
+            });
+        });
+
+        // Update charts based on filters
+        function updateCharts() {
+            // Animate bars
+            document.querySelectorAll('.bar').forEach((bar, index) => {
+                const currentHeight = parseInt(bar.style.height);
+                const variation = Math.random() * 20 - 10;
+                const newHeight = Math.max(10, Math.min(95, currentHeight + variation));
+                bar.style.height = `${newHeight}%`;
+                
+                // Update value
+                const value = bar.querySelector('.bar-value');
+                if (value) {
+                    value.textContent = Math.floor(newHeight * 6);
+                }
+            });
+
+            // Update progress bars
+            document.querySelectorAll('.progress-fill').forEach(fill => {
+                const currentWidth = parseInt(fill.style.width);
+                const variation = Math.random() * 10 - 5;
+                const newWidth = Math.max(20, Math.min(100, currentWidth + variation));
+                fill.style.width = `${newWidth}%`;
+            });
+        }
+
+        // Generate report
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const button = event.target;
+            
+            // Show loading state
+            button.textContent = 'Generating...';
+            button.disabled = true;
+            
+            // Simulate report generation
+            setTimeout(() => {
+                button.innerHTML = '<span class="icon-download"></span> Generate & Download Report';
+                button.disabled = false;
+                
+                // Show success message
+                showNotification(`${reportType.charAt(0).toUpperCase() + reportType.slice(1)} report generated successfully!`);
+                
+                // In production, this would trigger actual download
+                console.log(`Downloading ${reportType} report...`);
+            }, 2000);
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                padding: 1rem 1.5rem;
+                border-radius: 0.5rem;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                border-left: 4px solid var(--success-500);
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="color: var(--success-500);">✓</span>
+                    <span>${message}</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Real-time updates simulation
+        setInterval(() => {
+            // Update random KPI
+            const kpis = document.querySelectorAll('.kpi-change');
+            const randomKpi = kpis[Math.floor(Math.random() * kpis.length)];
+            
+            // Pulse effect
+            randomKpi.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                randomKpi.style.transform = 'scale(1)';
+            }, 300);
+        }, 5000);
+    </script>
+</body>
+</html>

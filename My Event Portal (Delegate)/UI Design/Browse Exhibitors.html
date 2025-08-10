@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Exhibitions - BookMeIn2</title>
+    <link rel="stylesheet" href="bookmein2-style-library.css">
+    <style>
+        /* Page specific styles for clean minimal design */
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .exhibitions-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Header Section */
+        .page-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .page-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 12px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* Search and Filter Bar */
+        .filter-bar {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            margin-bottom: 32px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        .filter-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-chip {
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip:hover {
+            background: #e2e8f0;
+        }
+
+        .filter-chip.active {
+            background: #4285f4;
+            border-color: #4285f4;
+            color: white;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .view-btn {
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+        }
+
+        .view-btn.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Exhibition Stats */
+        .exhibition-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .stat-text {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .stat-count {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Exhibition Grid */
+        .exhibitions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .exhibition-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .exhibition-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .exhibition-header {
+            padding: 24px;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .exhibition-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4285f4 0%, #667eea 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 16px;
+            font-weight: bold;
+        }
+
+        .exhibition-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0 0 8px 0;
+        }
+
+        .exhibition-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e0e7ff;
+            color: #4338ca;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .exhibition-body {
+            padding: 24px;
+        }
+
+        .exhibition-description {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .exhibition-info {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .info-icon {
+            font-size: 16px;
+        }
+
+        /* Exhibition Detail Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            padding: 32px 32px 0;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 20px;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            transform: rotate(90deg);
+        }
+
+        .modal-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4285f4 0%, #667eea 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 8px 0;
+        }
+
+        .modal-category {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #e0e7ff;
+            color: #4338ca;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .modal-body {
+            padding: 32px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .section-content {
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.8;
+        }
+
+        .sessions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .session-item {
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .session-item:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+        }
+
+        .session-name {
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .session-time {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .session-status {
+            padding: 4px 12px;
+            background: #10b981;
+            color: white;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .contact-icon {
+            width: 36px;
+            height: 36px;
+            background: #e0e7ff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .contact-text {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-value {
+            font-size: 14px;
+            color: #1a1a1a;
+            margin-top: 2px;
+        }
+
+        .contact-value a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .contact-value a:hover {
+            text-decoration: underline;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        /* Loading State */
+        .loading-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 16px;
+        }
+
+        .skeleton-title {
+            height: 24px;
+            width: 70%;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-text {
+            height: 16px;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .exhibitions-container {
+                padding: 24px 16px;
+            }
+
+            .page-title {
+                font-size: 32px;
+            }
+
+            .exhibitions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-bar {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .modal-content {
+                max-height: 100vh;
+                border-radius: 20px 20px 0 0;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="exhibitions-container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1 class="page-title">Browse Exhibitions</h1>
+            <p class="page-subtitle">Discover innovative companies and connect with industry leaders</p>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Search exhibitors..." id="searchInput">
+            </div>
+            
+            <div class="filter-chips">
+                <button class="filter-chip active" data-category="all">All</button>
+                <button class="filter-chip" data-category="technology">Technology</button>
+                <button class="filter-chip" data-category="healthcare">Healthcare</button>
+                <button class="filter-chip" data-category="finance">Finance</button>
+                <button class="filter-chip" data-category="education">Education</button>
+            </div>
+
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="grid">⊞</button>
+                <button class="view-btn" data-view="list">☰</button>
+            </div>
+        </div>
+
+        <!-- Exhibition Stats -->
+        <div class="exhibition-stats">
+            <div class="stat-text">
+                Showing <span class="stat-count" id="showingCount">12</span> of <span class="stat-count">48</span> exhibitors
+            </div>
+            <div class="stat-text">
+                Sort by: <select style="border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 8px;">
+                    <option>Relevance</option>
+                    <option>Name A-Z</option>
+                    <option>Name Z-A</option>
+                    <option>Most Sessions</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Exhibition Grid -->
+        <div class="exhibitions-grid" id="exhibitionsGrid">
+            <!-- Exhibition cards will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Exhibition Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close-btn" onclick="closeModal()">×</button>
+                <div class="modal-logo" id="modalLogo">LOGO</div>
+                <h2 class="modal-title" id="modalTitle">Exhibitor Name</h2>
+                <span class="modal-category" id="modalCategory">Category</span>
+            </div>
+            
+            <div class="modal-body">
+                <!-- About Us Section -->
+                <div class="section">
+                    <h3 class="section-title">About Us</h3>
+                    <div class="section-content" id="modalAbout">
+                        Loading...
+                    </div>
+                </div>
+
+                <!-- Our Sessions Section -->
+                <div class="section">
+                    <h3 class="section-title">Our Sessions</h3>
+                    <div class="sessions-list" id="modalSessions">
+                        <!-- Sessions will be dynamically inserted -->
+                    </div>
+                </div>
+
+                <!-- Contact Information Section -->
+                <div class="section">
+                    <h3 class="section-title">Contact Information</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <div class="contact-icon">✉️</div>
+                            <div class="contact-text">
+                                <div class="contact-label">Email</div>
+                                <div class="contact-value">
+                                    <a href="mailto:placeholder@email.com" id="modalEmail">placeholder@email.com</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">🌐</div>
+                            <div class="contact-text">
+                                <div class="contact-label">Website</div>
+                                <div class="contact-value">
+                                    <a href="#" target="_blank" id="modalWebsite">www.placeholder.com</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">📍</div>
+                            <div class="contact-text">
+                                <div class="contact-label">Booth Location</div>
+                                <div class="contact-value" id="modalBooth">Hall A, Booth 123</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample exhibition data
+        const exhibitions = [
+            {
+                id: 1,
+                name: "TechCorp Solutions",
+                category: "technology",
+                logo: "TC",
+                description: "Leading provider of enterprise software solutions, specializing in cloud computing and AI-driven analytics. We help businesses transform their operations through innovative technology.",
+                about: "TechCorp Solutions has been at the forefront of digital transformation for over 15 years. We specialize in creating custom software solutions that drive business growth and efficiency. Our team of experts works closely with clients to understand their unique challenges and deliver tailored solutions that exceed expectations.",
+                sessions: [
+                    { name: "AI in Enterprise Software", time: "10:00 AM - 11:00 AM", status: "Upcoming" },
+                    { name: "Cloud Migration Strategies", time: "2:00 PM - 3:00 PM", status: "Upcoming" }
+                ],
+                email: "contact@techcorp.com",
+                website: "www.techcorp.com",
+                booth: "Hall A, Booth 101"
+            },
+            {
+                id: 2,
+                name: "HealthTech Innovations",
+                category: "healthcare",
+                logo: "HT",
+                description: "Revolutionizing healthcare through cutting-edge medical devices and digital health platforms that improve patient outcomes.",
+                about: "HealthTech Innovations is dedicated to improving healthcare delivery through innovative technology solutions. Our products range from wearable health monitors to AI-powered diagnostic tools, all designed to make healthcare more accessible and effective.",
+                sessions: [
+                    { name: "Future of Telemedicine", time: "11:00 AM - 12:00 PM", status: "Upcoming" },
+                    { name: "Wearable Health Tech Demo", time: "3:00 PM - 4:00 PM", status: "Live" }
+                ],
+                email: "info@healthtech.com",
+                website: "www.healthtech.com",
+                booth: "Hall B, Booth 205"
+            },
+            {
+                id: 3,
+                name: "FinanceFlow Pro",
+                category: "finance",
+                logo: "FF",
+                description: "Modern financial management solutions for businesses of all sizes, featuring real-time analytics and automated workflows.",
+                about: "FinanceFlow Pro provides comprehensive financial management solutions that help businesses streamline their operations and make data-driven decisions. Our platform integrates seamlessly with existing systems to provide real-time insights and automated reporting.",
+                sessions: [
+                    { name: "Automated Financial Reporting", time: "9:00 AM - 10:00 AM", status: "Completed" },
+                    { name: "Risk Management Workshop", time: "1:00 PM - 2:00 PM", status: "Upcoming" }
+                ],
+                email: "hello@financeflow.com",
+                website: "www.financeflow.com",
+                booth: "Hall C, Booth 312"
+            },
+            {
+                id: 4,
+                name: "EduTech Masters",
+                category: "education",
+                logo: "EM",
+                description: "Transforming education with interactive learning platforms and AI-powered personalized learning experiences.",
+                about: "EduTech Masters creates innovative educational technology that adapts to individual learning styles. Our platforms are used by schools and universities worldwide to enhance student engagement and improve learning outcomes.",
+                sessions: [
+                    { name: "Personalized Learning with AI", time: "10:30 AM - 11:30 AM", status: "Upcoming" },
+                    { name: "Virtual Classroom Solutions", time: "2:30 PM - 3:30 PM", status: "Upcoming" }
+                ],
+                email: "learn@edutech.com",
+                website: "www.edutech.com",
+                booth: "Hall D, Booth 418"
+            },
+            {
+                id: 5,
+                name: "Green Energy Systems",
+                category: "technology",
+                logo: "GE",
+                description: "Sustainable energy solutions including solar panels, wind turbines, and smart grid technology for a cleaner future.",
+                about: "Green Energy Systems is committed to creating a sustainable future through renewable energy technology. We design and manufacture cutting-edge solar and wind energy systems that help businesses reduce their carbon footprint.",
+                sessions: [
+                    { name: "Solar Energy Innovation", time: "11:00 AM - 12:00 PM", status: "Upcoming" },
+                    { name: "Smart Grid Technology", time: "3:00 PM - 4:00 PM", status: "Upcoming" }
+                ],
+                email: "info@greenenergy.com",
+                website: "www.greenenergy.com",
+                booth: "Hall A, Booth 115"
+            },
+            {
+                id: 6,
+                name: "DataViz Analytics",
+                category: "technology",
+                logo: "DV",
+                description: "Advanced data visualization and business intelligence tools that turn complex data into actionable insights.",
+                about: "DataViz Analytics specializes in making data accessible and understandable. Our visualization tools help businesses identify trends, patterns, and opportunities hidden in their data.",
+                sessions: [
+                    { name: "Interactive Dashboard Design", time: "9:30 AM - 10:30 AM", status: "Upcoming" },
+                    { name: "Real-time Data Analytics", time: "1:30 PM - 2:30 PM", status: "Upcoming" }
+                ],
+                email: "data@dataviz.com",
+                website: "www.dataviz.com",
+                booth: "Hall A, Booth 122"
+            },
+            {
+                id: 7,
+                name: "MedTech Solutions",
+                category: "healthcare",
+                logo: "MS",
+                description: "Innovative medical devices and healthcare IT solutions improving patient care and clinical efficiency.",
+                about: "MedTech Solutions develops state-of-the-art medical devices and software that enhance patient care and streamline clinical workflows. Our products are trusted by healthcare providers worldwide.",
+                sessions: [
+                    { name: "IoT in Healthcare", time: "10:00 AM - 11:00 AM", status: "Upcoming" },
+                    { name: "Patient Data Security", time: "2:00 PM - 3:00 PM", status: "Upcoming" }
+                ],
+                email: "contact@medtech.com",
+                website: "www.medtech.com",
+                booth: "Hall B, Booth 230"
+            },
+            {
+                id: 8,
+                name: "CryptoSecure Bank",
+                category: "finance",
+                logo: "CS",
+                description: "Blockchain-based financial services and cryptocurrency solutions for modern banking needs.",
+                about: "CryptoSecure Bank is pioneering the integration of blockchain technology in traditional banking. We offer secure, transparent, and efficient financial services powered by cryptocurrency.",
+                sessions: [
+                    { name: "Blockchain in Banking", time: "11:30 AM - 12:30 PM", status: "Upcoming" },
+                    { name: "Cryptocurrency Trading", time: "3:30 PM - 4:30 PM", status: "Upcoming" }
+                ],
+                email: "secure@cryptobank.com",
+                website: "www.cryptobank.com",
+                booth: "Hall C, Booth 345"
+            },
+            {
+                id: 9,
+                name: "SmartLearn Academy",
+                category: "education",
+                logo: "SL",
+                description: "Online learning platform offering professional certification courses and skill development programs.",
+                about: "SmartLearn Academy provides high-quality online education that helps professionals advance their careers. Our courses are designed by industry experts and feature hands-on projects.",
+                sessions: [
+                    { name: "Future of Online Learning", time: "9:00 AM - 10:00 AM", status: "Upcoming" },
+                    { name: "Micro-learning Strategies", time: "1:00 PM - 2:00 PM", status: "Upcoming" }
+                ],
+                email: "academy@smartlearn.com",
+                website: "www.smartlearn.com",
+                booth: "Hall D, Booth 456"
+            },
+            {
+                id: 10,
+                name: "RoboTech Industries",
+                category: "technology",
+                logo: "RT",
+                description: "Advanced robotics and automation solutions for manufacturing and logistics industries.",
+                about: "RoboTech Industries designs and manufactures cutting-edge robotic systems that revolutionize industrial processes. Our robots increase efficiency, reduce costs, and improve workplace safety.",
+                sessions: [
+                    { name: "Industrial Automation 4.0", time: "10:30 AM - 11:30 AM", status: "Upcoming" },
+                    { name: "Collaborative Robots Demo", time: "2:30 PM - 3:30 PM", status: "Live" }
+                ],
+                email: "robots@robotech.com",
+                website: "www.robotech.com",
+                booth: "Hall A, Booth 150"
+            },
+            {
+                id: 11,
+                name: "BioHealth Labs",
+                category: "healthcare",
+                logo: "BH",
+                description: "Biotechnology research and development focusing on personalized medicine and gene therapy.",
+                about: "BioHealth Labs is at the forefront of biotechnology innovation, developing breakthrough therapies that target diseases at the genetic level. Our research is paving the way for personalized medicine.",
+                sessions: [
+                    { name: "Gene Therapy Advances", time: "11:00 AM - 12:00 PM", status: "Upcoming" },
+                    { name: "Personalized Medicine", time: "3:00 PM - 4:00 PM", status: "Upcoming" }
+                ],
+                email: "research@biohealth.com",
+                website: "www.biohealth.com",
+                booth: "Hall B, Booth 267"
+            },
+            {
+                id: 12,
+                name: "InvestSmart Platform",
+                category: "finance",
+                logo: "IS",
+                description: "AI-powered investment platform providing personalized portfolio management and financial advice.",
+                about: "InvestSmart Platform uses artificial intelligence to provide personalized investment advice and automated portfolio management. Our platform makes professional investment strategies accessible to everyone.",
+                sessions: [
+                    { name: "AI in Investment Management", time: "9:30 AM - 10:30 AM", status: "Upcoming" },
+                    { name: "Robo-Advisory Services", time: "1:30 PM - 2:30 PM", status: "Upcoming" }
+                ],
+                email: "invest@investsmart.com",
+                website: "www.investsmart.com",
+                booth: "Hall C, Booth 378"
+            }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderExhibitions(exhibitions);
+            setupFilters();
+            setupSearch();
+            setupViewToggle();
+        });
+
+        // Render exhibition cards
+        function renderExhibitions(data) {
+            const grid = document.getElementById('exhibitionsGrid');
+            grid.innerHTML = '';
+            
+            data.forEach((exhibition, index) => {
+                const card = createExhibitionCard(exhibition);
+                setTimeout(() => {
+                    grid.appendChild(card);
+                }, index * 50);
+            });
+            
+            document.getElementById('showingCount').textContent = data.length;
+        }
+
+        // Create exhibition card
+        function createExhibitionCard(exhibition) {
+            const card = document.createElement('div');
+            card.className = 'exhibition-card';
+            card.onclick = () => openModal(exhibition);
+            
+            card.innerHTML = `
+                <div class="exhibition-header">
+                    <div class="exhibition-logo">${exhibition.logo}</div>
+                    <h3 class="exhibition-name">${exhibition.name}</h3>
+                    <span class="exhibition-category">${exhibition.category}</span>
+                </div>
+                <div class="exhibition-body">
+                    <p class="exhibition-description">${exhibition.description}</p>
+                    <div class="exhibition-info">
+                        <div class="info-item">
+                            <span class="info-icon">📅</span>
+                            <span>${exhibition.sessions.length} Sessions</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-icon">📍</span>
+                            <span>${exhibition.booth}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Open modal with exhibition details
+        function openModal(exhibition) {
+            const modal = document.getElementById('modalOverlay');
+            
+            // Update modal content
+            document.getElementById('modalLogo').textContent = exhibition.logo;
+            document.getElementById('modalTitle').textContent = exhibition.name;
+            document.getElementById('modalCategory').textContent = exhibition.category;
+            document.getElementById('modalAbout').textContent = exhibition.about;
+            document.getElementById('modalEmail').textContent = exhibition.email;
+            document.getElementById('modalEmail').href = `mailto:${exhibition.email}`;
+            document.getElementById('modalWebsite').textContent = exhibition.website;
+            document.getElementById('modalWebsite').href = `https://${exhibition.website}`;
+            document.getElementById('modalBooth').textContent = exhibition.booth;
+            
+            // Render sessions
+            const sessionsContainer = document.getElementById('modalSessions');
+            sessionsContainer.innerHTML = '';
+            exhibition.sessions.forEach(session => {
+                const sessionItem = document.createElement('div');
+                sessionItem.className = 'session-item';
+                sessionItem.innerHTML = `
+                    <div>
+                        <div class="session-name">${session.name}</div>
+                        <div class="session-time">${session.time}</div>
+                    </div>
+                    <span class="session-status">${session.status}</span>
+                `;
+                sessionsContainer.appendChild(sessionItem);
+            });
+            
+            // Show modal
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('modalOverlay');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on overlay click
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Setup filters
+        function setupFilters() {
+            const filterChips = document.querySelectorAll('.filter-chip');
+            
+            filterChips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    // Remove active from all chips
+                    filterChips.forEach(c => c.classList.remove('active'));
+                    // Add active to clicked chip
+                    this.classList.add('active');
+                    
+                    // Filter exhibitions
+                    const category = this.dataset.category;
+                    if (category === 'all') {
+                        renderExhibitions(exhibitions);
+                    } else {
+                        const filtered = exhibitions.filter(e => e.category === category);
+                        renderExhibitions(filtered);
+                    }
+                });
+            });
+        }
+
+        // Setup search
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                
+                if (query === '') {
+                    renderExhibitions(exhibitions);
+                } else {
+                    const filtered = exhibitions.filter(e => 
+                        e.name.toLowerCase().includes(query) ||
+                        e.description.toLowerCase().includes(query) ||
+                        e.category.toLowerCase().includes(query)
+                    );
+                    renderExhibitions(filtered);
+                }
+            });
+        }
+
+        // Setup view toggle
+        function setupViewToggle() {
+            const viewBtns = document.querySelectorAll('.view-btn');
+            
+            viewBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active from all buttons
+                    viewBtns.forEach(b => b.classList.remove('active'));
+                    // Add active to clicked button
+                    this.classList.add('active');
+                    
+                    // Change grid layout
+                    const grid = document.getElementById('exhibitionsGrid');
+                    if (this.dataset.view === 'list') {
+                        grid.style.gridTemplateColumns = '1fr';
+                    } else {
+                        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(340px, 1fr))';
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

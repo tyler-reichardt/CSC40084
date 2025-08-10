@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Feed Dashboard - BookMeIn2</title>
+    <link rel="stylesheet" href="bookmein2-style-library.css">
+    <style>
+        /* Page specific styles for clean minimal design */
+        body {
+            background: #0f172a;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Main Feed Area */
+        .feed-container {
+            background: #1a1a1a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feed-header {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #64748b;
+        }
+
+        .dot.active {
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            50% { 
+                box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+            }
+        }
+
+        .close-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 20px;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .feed-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        }
+
+        .feed-title {
+            text-align: center;
+            color: white;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .feed-title h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feed-title p {
+            font-size: 18px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .video-placeholder.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .feed-controls {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-radius: 16px;
+            z-index: 10;
+        }
+
+        .control-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 20px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background: #4285f4;
+            border-color: #4285f4;
+        }
+
+        .control-btn.danger {
+            background: #ef4444;
+            border-color: #ef4444;
+        }
+
+        /* Sidebar Panels */
+        .sidebar-container {
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .panel {
+            background: white;
+            border-left: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .panel:not(:last-child) {
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-badge {
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        /* Q&A Panel */
+        .qa-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .qa-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .qa-item:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateX(-4px);
+        }
+
+        .qa-item.pending {
+            border-left: 3px solid #f59e0b;
+        }
+
+        .qa-item.approved {
+            border-left: 3px solid #10b981;
+        }
+
+        .qa-author {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .qa-question {
+            font-size: 14px;
+            color: #1a1a1a;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .qa-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .qa-btn {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .qa-btn:hover {
+            background: #f0f9ff;
+            border-color: #4285f4;
+            color: #4285f4;
+        }
+
+        .qa-btn.approve {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        .qa-btn.reject {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        /* Polls Panel */
+        .polls-content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .poll-btn {
+            padding: 18px 24px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poll-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(66, 133, 244, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .poll-btn:hover::before {
+            left: 100%;
+        }
+
+        .poll-btn:hover {
+            background: #f0f9ff;
+            border-color: #4285f4;
+            color: #4285f4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+        }
+
+        .poll-btn.primary {
+            background: linear-gradient(135deg, #4285f4 0%, #667eea 100%);
+            color: white;
+            border: none;
+        }
+
+        .poll-btn.primary:hover {
+            background: linear-gradient(135deg, #3674e3 0%, #5a6fd8 100%);
+            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.3);
+        }
+
+        .active-poll {
+            background: #f0f9ff;
+            border: 2px solid #4285f4;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .poll-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .poll-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .poll-option {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poll-option-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, #4285f4 0%, #667eea 100%);
+            opacity: 0.1;
+            transition: width 0.5s ease;
+        }
+
+        .poll-option-content {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .poll-option-text {
+            font-size: 13px;
+            color: #1a1a1a;
+        }
+
+        .poll-option-percent {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4285f4;
+        }
+
+        .viewer-count {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .viewer-icon {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-container {
+                position: fixed;
+                right: -380px;
+                top: 0;
+                bottom: 0;
+                width: 380px;
+                transition: right 0.3s ease;
+                z-index: 100;
+                box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+            }
+
+            .sidebar-container.open {
+                right: 0;
+            }
+
+            .toggle-sidebar {
+                position: fixed;
+                right: 16px;
+                bottom: 16px;
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background: #4285f4;
+                color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                z-index: 101;
+                box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .feed-title h1 {
+                font-size: 32px;
+            }
+
+            .sidebar-container {
+                width: 100%;
+                right: -100%;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Main Feed Area -->
+        <div class="feed-container">
+            <div class="feed-header">
+                <div class="status-bar">
+                    <div class="status-dots">
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                        <div class="dot active"></div>
+                    </div>
+                    <span style="color: white; font-size: 14px; font-weight: 500;">LIVE</span>
+                </div>
+                <button class="close-btn" title="Exit">✕</button>
+            </div>
+
+            <div class="viewer-count">
+                <div class="viewer-icon"></div>
+                <span>2,847 viewers</span>
+            </div>
+
+            <div class="feed-content">
+                <div class="feed-title">
+                    <h1>Live Feed</h1>
+                    <p>Screen Share</p>
+                </div>
+                <div class="video-placeholder" id="videoFeed">
+                    <!-- Video/Screen share content would go here -->
+                </div>
+            </div>
+
+            <div class="feed-controls">
+                <button class="control-btn" title="Microphone" id="micBtn">🎤</button>
+                <button class="control-btn" title="Camera" id="camBtn">📹</button>
+                <button class="control-btn active" title="Screen Share" id="screenBtn">🖥️</button>
+                <button class="control-btn" title="Chat" id="chatBtn">💬</button>
+                <button class="control-btn danger" title="End Call">📞</button>
+            </div>
+        </div>
+
+        <!-- Sidebar Panels -->
+        <div class="sidebar-container">
+            <!-- Q&A Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        Moderated Q&A
+                        <span class="panel-badge">6</span>
+                    </h2>
+                </div>
+                <div class="qa-list" id="qaList">
+                    <div class="qa-item pending">
+                        <div class="qa-author">John Smith</div>
+                        <div class="qa-question">What are the key performance metrics we should focus on for Q1?</div>
+                        <div class="qa-actions">
+                            <button class="qa-btn approve">Approve</button>
+                            <button class="qa-btn">Skip</button>
+                            <button class="qa-btn reject">Reject</button>
+                        </div>
+                    </div>
+
+                    <div class="qa-item pending">
+                        <div class="qa-author">Sarah Johnson</div>
+                        <div class="qa-question">How does this integrate with our existing CRM system?</div>
+                        <div class="qa-actions">
+                            <button class="qa-btn approve">Approve</button>
+                            <button class="qa-btn">Skip</button>
+                            <button class="qa-btn reject">Reject</button>
+                        </div>
+                    </div>
+
+                    <div class="qa-item approved">
+                        <div class="qa-author">Mike Chen</div>
+                        <div class="qa-question">Can you explain the pricing structure for enterprise clients?</div>
+                        <div class="qa-actions">
+                            <button class="qa-btn">Answered</button>
+                        </div>
+                    </div>
+
+                    <div class="qa-item pending">
+                        <div class="qa-author">Emily Davis</div>
+                        <div class="qa-question">What security measures are in place for data protection?</div>
+                        <div class="qa-actions">
+                            <button class="qa-btn approve">Approve</button>
+                            <button class="qa-btn">Skip</button>
+                            <button class="qa-btn reject">Reject</button>
+                        </div>
+                    </div>
+
+                    <div class="qa-item pending">
+                        <div class="qa-author">Robert Wilson</div>
+                        <div class="qa-question">Is there API documentation available for developers?</div>
+                        <div class="qa-actions">
+                            <button class="qa-btn approve">Approve</button>
+                            <button class="qa-btn">Skip</button>
+                            <button class="qa-btn reject">Reject</button>
+                        </div>
+                    </div>
+
+                    <div class="qa-item approved">
+                        <div class="qa-author">Lisa Anderson</div>
+                        <div class="qa-question">What's the expected ROI timeline for implementation?</div>
+                        <div class="qa-actions">
+                            <button class="qa-btn">Answered</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Polls Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Live Polls</h2>
+                </div>
+                <div class="polls-content">
+                    <button class="poll-btn" id="createPollBtn">
+                        Create Poll
+                    </button>
+                    <button class="poll-btn primary" id="launchPollBtn">
+                        Launch Poll
+                    </button>
+
+                    <div class="active-poll" id="activePoll" style="display: none;">
+                        <div class="poll-title">Current Poll: Rate this presentation</div>
+                        <div class="poll-options">
+                            <div class="poll-option">
+                                <div class="poll-option-bar" style="width: 45%;"></div>
+                                <div class="poll-option-content">
+                                    <span class="poll-option-text">Excellent</span>
+                                    <span class="poll-option-percent">45%</span>
+                                </div>
+                            </div>
+                            <div class="poll-option">
+                                <div class="poll-option-bar" style="width: 35%;"></div>
+                                <div class="poll-option-content">
+                                    <span class="poll-option-text">Good</span>
+                                    <span class="poll-option-percent">35%</span>
+                                </div>
+                            </div>
+                            <div class="poll-option">
+                                <div class="poll-option-bar" style="width: 15%;"></div>
+                                <div class="poll-option-content">
+                                    <span class="poll-option-text">Average</span>
+                                    <span class="poll-option-percent">15%</span>
+                                </div>
+                            </div>
+                            <div class="poll-option">
+                                <div class="poll-option-bar" style="width: 5%;"></div>
+                                <div class="poll-option-content">
+                                    <span class="poll-option-text">Poor</span>
+                                    <span class="poll-option-percent">5%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Toggle -->
+    <button class="toggle-sidebar" id="toggleSidebar" style="display: none;">
+        💬
+    </button>
+
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupInteractions();
+            simulateLiveData();
+            checkMobileView();
+        });
+
+        // Setup interactions
+        function setupInteractions() {
+            // Control buttons
+            document.querySelectorAll('.control-btn:not(.danger)').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    
+                    // Special handling for screen share
+                    if (this.id === 'screenBtn' && this.classList.contains('active')) {
+                        startScreenShare();
+                    }
+                });
+            });
+
+            // End call button
+            document.querySelector('.control-btn.danger').addEventListener('click', function() {
+                if (confirm('Are you sure you want to end the session?')) {
+                    endSession();
+                }
+            });
+
+            // Close button
+            document.querySelector('.close-btn').addEventListener('click', function() {
+                if (confirm('Exit the live session?')) {
+                    window.location.href = '#dashboard';
+                }
+            });
+
+            // Q&A Actions
+            document.querySelectorAll('.qa-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const item = this.closest('.qa-item');
+                    
+                    if (this.classList.contains('approve')) {
+                        item.classList.remove('pending');
+                        item.classList.add('approved');
+                        this.textContent = 'Approved ✓';
+                        this.disabled = true;
+                        showNotification('Question approved!', 'success');
+                    } else if (this.classList.contains('reject')) {
+                        item.style.animation = 'slideOut 0.3s ease-out';
+                        setTimeout(() => item.remove(), 300);
+                        showNotification('Question rejected', 'info');
+                    }
+                });
+            });
+
+            // Create Poll
+            document.getElementById('createPollBtn').addEventListener('click', function() {
+                createPoll();
+            });
+
+            // Launch Poll
+            document.getElementById('launchPollBtn').addEventListener('click', function() {
+                launchPoll();
+            });
+
+            // Mobile sidebar toggle
+            const toggleBtn = document.getElementById('toggleSidebar');
+            const sidebar = document.querySelector('.sidebar-container');
+            
+            toggleBtn?.addEventListener('click', function() {
+                sidebar.classList.toggle('open');
+                this.textContent = sidebar.classList.contains('open') ? '✕' : '💬';
+            });
+        }
+
+        // Start screen share simulation
+        function startScreenShare() {
+            const videoFeed = document.getElementById('videoFeed');
+            const feedTitle = document.querySelector('.feed-title');
+            
+            feedTitle.style.display = 'none';
+            videoFeed.classList.add('active');
+            videoFeed.innerHTML = '<div style="color: white; font-size: 24px;">Screen sharing active...</div>';
+            
+            showNotification('Screen sharing started', 'success');
+        }
+
+        // End session
+        function endSession() {
+            showNotification('Session ended', 'info');
+            setTimeout(() => {
+                window.location.href = '#dashboard';
+            }, 1500);
+        }
+
+        // Create poll
+        function createPoll() {
+            const pollTitle = prompt('Enter poll question:');
+            if (pollTitle) {
+                showNotification('Poll created: ' + pollTitle, 'success');
+                document.getElementById('launchPollBtn').style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            }
+        }
+
+        // Launch poll
+        function launchPoll() {
+            const activePoll = document.getElementById('activePoll');
+            activePoll.style.display = 'block';
+            animatePollResults();
+            showNotification('Poll launched!', 'success');
+        }
+
+        // Animate poll results
+        function animatePollResults() {
+            const bars = document.querySelectorAll('.poll-option-bar');
+            const percentages = [65, 25, 8, 2];
+            
+            bars.forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.style.width = percentages[index] + '%';
+                    bar.parentElement.querySelector('.poll-option-percent').textContent = percentages[index] + '%';
+                }, index * 100);
+            });
+        }
+
+        // Simulate live data
+        function simulateLiveData() {
+            // Update viewer count
+            setInterval(() => {
+                const viewerCount = document.querySelector('.viewer-count span');
+                const current = parseInt(viewerCount.textContent);
+                const change = Math.floor(Math.random() * 100) - 50;
+                const newCount = Math.max(100, current + change);
+                viewerCount.textContent = newCount.toLocaleString() + ' viewers';
+            }, 5000);
+
+            // Add new questions periodically
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    addNewQuestion();
+                }
+            }, 15000);
+        }
+
+        // Add new question
+        function addNewQuestion() {
+            const questions = [
+                "What's the roadmap for the next quarter?",
+                "How does this affect our budget allocation?",
+                "Can we get a demo of the new features?",
+                "What training resources are available?"
+            ];
+            
+            const names = ["Alex Brown", "Chris Lee", "Pat Taylor", "Sam Morgan"];
+            
+            const qaList = document.getElementById('qaList');
+            const newItem = document.createElement('div');
+            newItem.className = 'qa-item pending';
+            newItem.innerHTML = `
+                <div class="qa-author">${names[Math.floor(Math.random() * names.length)]}</div>
+                <div class="qa-question">${questions[Math.floor(Math.random() * questions.length)]}</div>
+                <div class="qa-actions">
+                    <button class="qa-btn approve">Approve</button>
+                    <button class="qa-btn">Skip</button>
+                    <button class="qa-btn reject">Reject</button>
+                </div>
+            `;
+            
+            qaList.insertBefore(newItem, qaList.firstChild);
+            
+            // Update badge
+            const badge = document.querySelector('.panel-badge');
+            badge.textContent = parseInt(badge.textContent) + 1;
+            
+            // Re-attach event listeners
+            newItem.querySelectorAll('.qa-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const item = this.closest('.qa-item');
+                    
+                    if (this.classList.contains('approve')) {
+                        item.classList.remove('pending');
+                        item.classList.add('approved');
+                        this.textContent = 'Approved ✓';
+                        this.disabled = true;
+                    } else if (this.classList.contains('reject')) {
+                        item.style.animation = 'slideOut 0.3s ease-out';
+                        setTimeout(() => item.remove(), 300);
+                    }
+                });
+            });
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 24px;
+                left: 24px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? '#10b981' : '#4285f4'};
+                color: white;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                animation: slideUp 0.3s ease-out;
+                z-index: 1000;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideDown 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Check mobile view
+        function checkMobileView() {
+            const toggleBtn = document.getElementById('toggleSidebar');
+            if (window.innerWidth <= 1024) {
+                toggleBtn.style.display = 'flex';
+            } else {
+                toggleBtn.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('resize', checkMobileView);
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideDown {
+                from {
+                    transform: translateY(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateY(100%);
+                    opacity: 0;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

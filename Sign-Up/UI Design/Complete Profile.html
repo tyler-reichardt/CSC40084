@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile - BookMeIn2</title>
+    <link rel="stylesheet" href="bookmein2-style-library.css">
+    <style>
+        /* Page specific styles for clean minimal design */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #f0f2f5 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            margin: 0;
+            padding: var(--spacing-lg);
+        }
+
+        .profile-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            width: 100%;
+            max-width: 480px;
+            padding: 48px;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+            font-weight: 600;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .avatar-upload {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            width: 32px;
+            height: 32px;
+            background: #4285f4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            border: 3px solid white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .avatar-upload:hover {
+            background: #3674e3;
+            transform: scale(1.1);
+        }
+
+        .profile-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .profile-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4285f4 0%, #667eea 100%);
+            border-radius: 2px;
+            width: 33%;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .required-dot {
+            width: 4px;
+            height: 4px;
+            background: #ef4444;
+            border-radius: 50%;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            background: #ffffff;
+            color: #1a1a1a;
+            box-sizing: border-box;
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4285f4;
+            box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.1);
+            background: #ffffff;
+        }
+
+        .form-input:valid:not(:placeholder-shown) {
+            border-color: #10b981;
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 36px;
+        }
+
+        .btn-save {
+            flex: 1;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #4285f4 0%, #667eea 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-save::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.5s ease;
+        }
+
+        .btn-save:hover::before {
+            left: 100%;
+        }
+
+        .btn-save:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(66, 133, 244, 0.3);
+        }
+
+        .btn-save:active {
+            transform: translateY(0);
+        }
+
+        .btn-save:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-skip {
+            padding: 14px 24px;
+            background: transparent;
+            color: #6b7280;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .btn-skip:hover {
+            border-color: #d1d5db;
+            background: #f9fafb;
+        }
+
+        /* Optional fields section */
+        .optional-section {
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 20px;
+        }
+
+        /* Success state */
+        .success-message {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .success-icon {
+            width: 24px;
+            height: 24px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Loading state */
+        .btn-save.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-save.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .profile-container {
+                padding: 32px 24px;
+            }
+
+            .profile-title {
+                font-size: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column-reverse;
+            }
+
+            .btn-skip {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <!-- Avatar Section -->
+        <div class="profile-header">
+            <div class="profile-avatar" id="avatarContainer">
+                <span id="avatarInitials">JP</span>
+                <div class="avatar-upload" title="Upload photo">
+                    <span>+</span>
+                </div>
+            </div>
+            <h1 class="profile-title">Complete Your Profile</h1>
+            <p class="profile-subtitle">Help us personalize your experience</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <!-- Form -->
+        <form id="profileForm">
+            <!-- Required Fields -->
+            <div class="form-group">
+                <label class="form-label" for="name">
+                    Name
+                    <span class="required-dot"></span>
+                </label>
+                <input 
+                    type="text" 
+                    id="name" 
+                    name="name" 
+                    class="form-input" 
+                    placeholder="Enter your full name"
+                    required
+                    autocomplete="name"
+                />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="company">
+                    Company
+                    <span class="required-dot"></span>
+                </label>
+                <input 
+                    type="text" 
+                    id="company" 
+                    name="company" 
+                    class="form-input" 
+                    placeholder="Enter your company name"
+                    required
+                    autocomplete="organization"
+                />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="jobTitle">
+                    Job Title
+                    <span class="required-dot"></span>
+                </label>
+                <input 
+                    type="text" 
+                    id="jobTitle" 
+                    name="jobTitle" 
+                    class="form-input" 
+                    placeholder="Enter your job title"
+                    required
+                    autocomplete="organization-title"
+                />
+                <div class="input-hint">e.g., Event Manager, Marketing Director</div>
+            </div>
+
+            <!-- Optional Fields -->
+            <div class="optional-section">
+                <div class="section-title">Optional Information</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="phone">Phone</label>
+                        <input 
+                            type="tel" 
+                            id="phone" 
+                            name="phone" 
+                            class="form-input" 
+                            placeholder="+1 (555) 000-0000"
+                            autocomplete="tel"
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="department">Department</label>
+                        <input 
+                            type="text" 
+                            id="department" 
+                            name="department" 
+                            class="form-input" 
+                            placeholder="e.g., Marketing"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="btn-group">
+                <button type="button" class="btn-skip" id="skipBtn">
+                    Skip for now
+                </button>
+                <button type="submit" class="btn-save">
+                    Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            updateInitials();
+        });
+
+        // Form submission
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('.btn-save');
+            const formData = {
+                name: document.getElementById('name').value,
+                company: document.getElementById('company').value,
+                jobTitle: document.getElementById('jobTitle').value,
+                phone: document.getElementById('phone').value,
+                department: document.getElementById('department').value
+            };
+            
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                
+                // Show success message
+                showSuccessMessage('Profile saved successfully!');
+                
+                // Update progress to 100%
+                document.getElementById('progressBar').style.width = '100%';
+                
+                // Simulate redirect
+                setTimeout(() => {
+                    console.log('Redirecting to dashboard...');
+                }, 2000);
+            }, 1500);
+        });
+
+        // Skip button
+        document.getElementById('skipBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to skip? You can complete your profile later.')) {
+                console.log('Skipping profile completion...');
+                window.location.href = '#dashboard';
+            }
+        });
+
+        // Update progress bar based on filled fields
+        function updateProgress() {
+            const inputs = document.querySelectorAll('.form-input[required]');
+            let filledCount = 0;
+            
+            inputs.forEach(input => {
+                if (input.value.trim()) {
+                    filledCount++;
+                }
+                
+                // Add event listener for real-time updates
+                input.addEventListener('input', updateProgress);
+            });
+            
+            const progress = (filledCount / inputs.length) * 100;
+            document.getElementById('progressBar').style.width = Math.max(33, progress) + '%';
+        }
+
+        // Update avatar initials based on name input
+        document.getElementById('name').addEventListener('input', updateInitials);
+        
+        function updateInitials() {
+            const nameInput = document.getElementById('name').value.trim();
+            const initialsElement = document.getElementById('avatarInitials');
+            
+            if (nameInput) {
+                const names = nameInput.split(' ');
+                const initials = names.map(n => n[0]).slice(0, 2).join('').toUpperCase();
+                initialsElement.textContent = initials;
+            } else {
+                initialsElement.textContent = 'JP';
+            }
+        }
+
+        // Avatar upload (simulation)
+        document.querySelector('.avatar-upload').addEventListener('click', function(e) {
+            e.stopPropagation();
+            alert('Photo upload feature coming soon!');
+        });
+
+        // Show success message
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.innerHTML = `
+                <div class="success-icon">✓</div>
+                <div>
+                    <div style="font-weight: 600; color: #1a1a1a;">Success!</div>
+                    <div style="font-size: 14px; color: #6b7280;">${message}</div>
+                </div>
+            `;
+            document.body.appendChild(successDiv);
+            
+            setTimeout(() => {
+                successDiv.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => successDiv.remove(), 300);
+            }, 3000);
+        }
+
+        // Add slide out animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Form field animations
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.01)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Analytics - BookMeIn2</title>
+    <link rel="stylesheet" href="bookmein2-style-library.css">
+    <style>
+        /* Page specific styles for clean minimal design */
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            margin: 0;
+            padding: var(--spacing-xl);
+        }
+
+        .analytics-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Header Section */
+        .analytics-header {
+            background: white;
+            border-radius: 20px;
+            padding: 32px 40px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .status-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            }
+            50% { 
+                box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+            }
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1.5px solid #e5e7eb;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 20px;
+        }
+
+        .btn-icon:hover {
+            border-color: #4285f4;
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        /* Primary Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 2px solid #f1f5f9;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #4285f4 0%, #667eea 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border-color: #e2e8f0;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-icon {
+            width: 20px;
+            height: 20px;
+            background: #f0f9ff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #4b5563 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-change {
+            font-size: 14px;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .metric-change.negative {
+            color: #ef4444;
+        }
+
+        .metric-change .arrow {
+            font-size: 16px;
+        }
+
+        /* Secondary Metrics */
+        .secondary-metrics {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .secondary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+        }
+
+        .secondary-metric {
+            text-align: center;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .secondary-metric:hover {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            transform: scale(1.02);
+        }
+
+        .secondary-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .secondary-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Chart Section */
+        .chart-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .chart-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chart-tab {
+            padding: 8px 16px;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .chart-tab.active {
+            background: #4285f4;
+            color: white;
+        }
+
+        .chart-container {
+            height: 200px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 100%;
+            gap: 16px;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #4285f4 0%, #667eea 100%);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            max-width: 60px;
+            animation: growUp 0.8s ease-out forwards;
+        }
+
+        @keyframes growUp {
+            from {
+                height: 0;
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .chart-bar:hover {
+            transform: scaleY(1.05);
+            filter: brightness(1.1);
+        }
+
+        /* Export Section */
+        .export-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+
+        .export-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+        }
+
+        .export-description {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .export-options {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .export-option {
+            padding: 12px 24px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-option:hover {
+            border-color: #4285f4;
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        .export-option.selected {
+            background: #4285f4;
+            border-color: #4285f4;
+            color: white;
+        }
+
+        .btn-export {
+            padding: 18px 48px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #374151 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-export::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: left 0.5s ease;
+        }
+
+        .btn-export:hover::before {
+            left: 100%;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Loading state */
+        .btn-export.loading {
+            color: transparent;
+        }
+
+        .btn-export.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .analytics-header {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .secondary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .export-options {
+                flex-direction: column;
+            }
+
+            .export-option {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: var(--spacing-md);
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .metric-value {
+                font-size: 28px;
+            }
+
+            .secondary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="analytics-container">
+        <!-- Header -->
+        <div class="analytics-header">
+            <div class="header-left">
+                <div class="status-dots">
+                    <div class="dot active"></div>
+                    <div class="dot active"></div>
+                    <div class="dot active"></div>
+                </div>
+                <h1 class="page-title">Session Analytics</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn-icon" title="Refresh">🔄</button>
+                <button class="btn-icon" title="Settings">⚙️</button>
+                <button class="btn-icon" title="Share">📤</button>
+            </div>
+        </div>
+
+        <!-- Primary Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">
+                    <div class="metric-icon">👥</div>
+                    Peak Viewers
+                </div>
+                <div class="metric-value">12,600</div>
+                <div class="metric-change">
+                    <span class="arrow">↑</span>
+                    <span>+18% from last session</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    <div class="metric-icon">⚡</div>
+                    Engagement Score
+                </div>
+                <div class="metric-value">42.055</div>
+                <div class="metric-change">
+                    <span class="arrow">↑</span>
+                    <span>+5.2 points increase</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-label">
+                    <div class="metric-icon">❓</div>
+                    Questions Asked
+                </div>
+                <div class="metric-value">346,550</div>
+                <div class="metric-change">
+                    <span class="arrow">↑</span>
+                    <span>+42% engagement rate</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Metrics -->
+        <div class="secondary-metrics">
+            <div class="secondary-grid">
+                <div class="secondary-metric">
+                    <div class="secondary-label">Average Watch Time</div>
+                    <div class="secondary-value">47:32</div>
+                </div>
+                <div class="secondary-metric">
+                    <div class="secondary-label">Chat Messages</div>
+                    <div class="secondary-value">8,247</div>
+                </div>
+                <div class="secondary-metric">
+                    <div class="secondary-label">Poll Participation</div>
+                    <div class="secondary-value">89%</div>
+                </div>
+                <div class="secondary-metric">
+                    <div class="secondary-label">Session Duration</div>
+                    <div class="secondary-value">1h 35m</div>
+                </div>
+                <div class="secondary-metric">
+                    <div class="secondary-label">Satisfaction Score</div>
+                    <div class="secondary-value">4.8/5.0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Section -->
+        <div class="chart-section">
+            <div class="chart-header">
+                <h2 class="chart-title">Engagement Timeline</h2>
+                <div class="chart-tabs">
+                    <button class="chart-tab active">Hourly</button>
+                    <button class="chart-tab">By Session</button>
+                    <button class="chart-tab">By Topic</button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-bars">
+                    <div class="chart-bar" style="height: 60%"></div>
+                    <div class="chart-bar" style="height: 75%"></div>
+                    <div class="chart-bar" style="height: 90%"></div>
+                    <div class="chart-bar" style="height: 85%"></div>
+                    <div class="chart-bar" style="height: 95%"></div>
+                    <div class="chart-bar" style="height: 70%"></div>
+                    <div class="chart-bar" style="height: 65%"></div>
+                    <div class="chart-bar" style="height: 80%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <h2 class="export-title">Export Analytics Data</h2>
+            <p class="export-description">
+                Download comprehensive analytics data for further analysis and reporting. 
+                Select your preferred format and customize the data range.
+            </p>
+            
+            <div class="export-options">
+                <div class="export-option selected">
+                    <span>📊</span>
+                    <span>CSV Format</span>
+                </div>
+                <div class="export-option">
+                    <span>📑</span>
+                    <span>Excel (XLSX)</span>
+                </div>
+                <div class="export-option">
+                    <span>📄</span>
+                    <span>PDF Report</span>
+                </div>
+                <div class="export-option">
+                    <span>📈</span>
+                    <span>JSON Data</span>
+                </div>
+            </div>
+
+            <button class="btn-export" id="exportBtn">
+                Export All Data (.CSV)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            animateMetrics();
+            setupInteractions();
+        });
+
+        // Animate metrics on load
+        function animateMetrics() {
+            const metrics = document.querySelectorAll('.metric-value');
+            metrics.forEach((metric, index) => {
+                metric.style.opacity = '0';
+                metric.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    metric.style.transition = 'all 0.6s ease-out';
+                    metric.style.opacity = '1';
+                    metric.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Animate secondary metrics
+            const secondaryMetrics = document.querySelectorAll('.secondary-metric');
+            secondaryMetrics.forEach((metric, index) => {
+                metric.style.opacity = '0';
+                metric.style.transform = 'scale(0.9)';
+                
+                setTimeout(() => {
+                    metric.style.transition = 'all 0.4s ease-out';
+                    metric.style.opacity = '1';
+                    metric.style.transform = 'scale(1)';
+                }, 500 + (index * 50));
+            });
+        }
+
+        // Setup interactions
+        function setupInteractions() {
+            // Chart tabs
+            document.querySelectorAll('.chart-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Refresh chart animation
+                    refreshChart();
+                });
+            });
+
+            // Export options
+            document.querySelectorAll('.export-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.export-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Update button text based on selection
+                    const format = this.querySelector('span:last-child').textContent;
+                    const btn = document.getElementById('exportBtn');
+                    
+                    if (format.includes('CSV')) {
+                        btn.textContent = 'Export All Data (.CSV)';
+                    } else if (format.includes('Excel')) {
+                        btn.textContent = 'Export All Data (.XLSX)';
+                    } else if (format.includes('PDF')) {
+                        btn.textContent = 'Generate PDF Report';
+                    } else {
+                        btn.textContent = 'Export All Data (.JSON)';
+                    }
+                });
+            });
+
+            // Export button
+            document.getElementById('exportBtn').addEventListener('click', exportData);
+
+            // Refresh button
+            document.querySelector('.btn-icon[title="Refresh"]').addEventListener('click', function() {
+                this.style.animation = 'spin 0.5s ease-out';
+                setTimeout(() => {
+                    this.style.animation = '';
+                    refreshData();
+                }, 500);
+            });
+
+            // Chart bar hover tooltips
+            document.querySelectorAll('.chart-bar').forEach((bar, index) => {
+                bar.addEventListener('mouseenter', function(e) {
+                    const value = Math.floor(Math.random() * 1000 + 500);
+                    showTooltip(e, `${value} viewers`);
+                });
+                
+                bar.addEventListener('mouseleave', hideTooltip);
+            });
+        }
+
+        // Refresh chart animation
+        function refreshChart() {
+            const bars = document.querySelectorAll('.chart-bar');
+            bars.forEach((bar, index) => {
+                const newHeight = Math.random() * 40 + 60; // Random height between 60-100%
+                bar.style.animation = 'none';
+                
+                setTimeout(() => {
+                    bar.style.height = newHeight + '%';
+                    bar.style.animation = 'growUp 0.8s ease-out forwards';
+                }, index * 50);
+            });
+        }
+
+        // Refresh data
+        function refreshData() {
+            // Simulate data refresh
+            animateMetrics();
+            refreshChart();
+            
+            // Show success message
+            showNotification('Data refreshed successfully!', 'success');
+        }
+
+        // Export data function
+        function exportData() {
+            const btn = document.getElementById('exportBtn');
+            const originalText = btn.textContent;
+            
+            // Show loading state
+            btn.classList.add('loading');
+            btn.disabled = true;
+            
+            // Simulate export process
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                btn.textContent = originalText;
+                
+                // Show success notification
+                showNotification('Export started! Your file will download shortly.', 'success');
+                
+                // Simulate file download
+                setTimeout(() => {
+                    const link = document.createElement('a');
+                    link.href = '#';
+                    link.download = 'session_analytics.csv';
+                    link.click();
+                }, 1000);
+            }, 2000);
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 24px;
+                right: 24px;
+                padding: 16px 24px;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                animation: slideInRight 0.3s ease-out;
+                z-index: 1000;
+            `;
+            
+            const icon = type === 'success' ? '✅' : '📊';
+            notification.innerHTML = `
+                <span style="font-size: 20px;">${icon}</span>
+                <span style="color: #1a1a1a; font-weight: 500;">${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Tooltip functions
+        function showTooltip(e, text) {
+            hideTooltip();
+            
+            const tooltip = document.createElement('div');
+            tooltip.id = 'tooltip';
+            tooltip.style.cssText = `
+                position: fixed;
+                background: #1a1a1a;
+                color: white;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                pointer-events: none;
+                z-index: 1000;
+                animation: fadeIn 0.2s ease-out;
+            `;
+            tooltip.textContent = text;
+            
+            document.body.appendChild(tooltip);
+            
+            const rect = e.target.getBoundingClientRect();
+            tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + 'px';
+            tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById('tooltip');
+            if (tooltip) {
+                tooltip.remove();
+            }
+        }
+
+        // Add animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

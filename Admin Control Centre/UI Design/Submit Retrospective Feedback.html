@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Feedback for Speakers</title>
+    <link rel="stylesheet" href="../../bookmein2-style-library.css">
+    <style>
+        .star-rating {
+            display: flex;
+            gap: 8px;
+            font-size: 24px;
+        }
+        .star {
+            cursor: pointer;
+            color: var(--neutral-300);
+            transition: color var(--transition);
+        }
+        .star.filled {
+            color: var(--warning-500);
+        }
+        .star:hover {
+            color: var(--warning-500);
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-xl">
+        <div class="card" style="max-width: 500px; margin: 0 auto;">
+            <div class="card-content p-xl">
+                <h1 class="text-h3 text-center mb-xl">EVENT FEEDBACK<br>FOR SPEAKERS</h1>
+                
+                <form>
+                    <!-- Platform Experience Rating -->
+                    <div class="form-group">
+                        <label class="form-label">PLATFORM EXPERIENCE</label>
+                        <div class="star-rating" id="starRating">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star filled" data-rating="4">★</span>
+                            <span class="star" data-rating="5">☆</span>
+                        </div>
+                    </div>
+
+                    <!-- Additional Comments -->
+                    <div class="form-group">
+                        <label class="form-label" for="comments">ADDITIONAL COMMENTS</label>
+                        <textarea id="comments" 
+                                  class="form-input form-textarea" 
+                                  rows="6"
+                                  placeholder="Please share your feedback about the event..."></textarea>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="text-center mt-xl">
+                        <button type="submit" class="btn btn-primary btn-lg" style="min-width: 200px;">
+                            SUBMIT
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Star rating functionality
+        const stars = document.querySelectorAll('.star');
+        let currentRating = 4; // Default rating
+
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                currentRating = parseInt(this.dataset.rating);
+                updateStars();
+            });
+
+            star.addEventListener('mouseenter', function() {
+                const hoverRating = parseInt(this.dataset.rating);
+                highlightStars(hoverRating);
+            });
+        });
+
+        document.getElementById('starRating').addEventListener('mouseleave', function() {
+            updateStars();
+        });
+
+        function updateStars() {
+            stars.forEach((star, index) => {
+                if (index < currentRating) {
+                    star.classList.add('filled');
+                    star.textContent = '★';
+                } else {
+                    star.classList.remove('filled');
+                    star.textContent = '☆';
+                }
+            });
+        }
+
+        function highlightStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('filled');
+                    star.textContent = '★';
+                } else {
+                    star.classList.remove('filled');
+                    star.textContent = '☆';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

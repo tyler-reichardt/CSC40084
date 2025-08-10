@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Details & Assets - BookMeIn2</title>
+    <link rel="stylesheet" href="bookmein2-style-library.css">
+    <style>
+        /* Page specific styles for clean minimal design */
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .session-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Header Section */
+        .session-header {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+            margin-bottom: 32px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 24px;
+        }
+
+        .breadcrumb a {
+            color: #4285f4;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb span {
+            color: #cbd5e1;
+        }
+
+        .session-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 16px;
+        }
+
+        .session-meta {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .meta-icon {
+            font-size: 16px;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        /* Video Section */
+        .video-section {
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 32px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            background: #000;
+        }
+
+        .video-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+        }
+
+        .video-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            margin-bottom: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .video-icon::before {
+            content: '▶';
+            position: relative;
+            left: 4px;
+        }
+
+        .video-icon:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1);
+        }
+
+        .video-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .video-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .video-controls {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .time-display {
+            color: white;
+            font-size: 14px;
+            font-family: monospace;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            margin: 0 16px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4285f4 0%, #667eea 100%);
+            border-radius: 3px;
+            width: 35%;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -3px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Downloads Section */
+        .downloads-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .download-all-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #4285f4 0%, #667eea 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .download-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+        }
+
+        .downloads-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .download-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .download-item:hover {
+            background: white;
+            border-color: #4285f4;
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.1);
+        }
+
+        .download-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .file-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .file-icon.pdf { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); }
+        .file-icon.doc { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
+        .file-icon.csv { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); }
+        .file-icon.txt { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); }
+        .file-icon.video { background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%); }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .file-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .file-size {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .file-date {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .download-btn {
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 20px;
+        }
+
+        .download-btn:hover {
+            background: #4285f4;
+            border-color: #4285f4;
+            color: white;
+            transform: rotate(-10deg) scale(1.1);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Related Sessions */
+        .related-section {
+            margin-top: 32px;
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .related-card {
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .related-card:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .related-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .related-info {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .session-container {
+                padding: 24px 16px;
+            }
+
+            .session-title {
+                font-size: 28px;
+            }
+
+            .session-meta {
+                flex-direction: column;
+            }
+
+            .downloads-grid {
+                gap: 12px;
+            }
+
+            .download-item {
+                padding: 16px;
+            }
+
+            .file-details {
+                font-size: 14px;
+            }
+
+            .stats-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: slideUp 0.3s ease-out;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="session-container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="#">Home</a>
+            <span>›</span>
+            <a href="#">Sessions</a>
+            <span>›</span>
+            <span>AI in Modern Art</span>
+        </div>
+
+        <!-- Session Header -->
+        <div class="session-header">
+            <h1 class="session-title">AI in Modern Art: Creative Revolution</h1>
+            
+            <div class="session-meta">
+                <div class="meta-item">
+                    <span class="meta-icon">📅</span>
+                    <span class="meta-label">Date:</span>
+                    <span>December 15, 2024</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">⏰</span>
+                    <span class="meta-label">Duration:</span>
+                    <span>1h 35min</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">🎤</span>
+                    <span class="meta-label">Speaker:</span>
+                    <span>Dr. Sarah Mitchell</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">👥</span>
+                    <span class="meta-label">Attendees:</span>
+                    <span>847</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-icon">⭐</span>
+                    <span class="meta-label">Rating:</span>
+                    <span>4.8/5.0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Section -->
+        <div class="video-section">
+            <div class="video-wrapper">
+                <div class="video-placeholder" id="videoPlayer">
+                    <div class="video-icon" onclick="playVideo()"></div>
+                    <div class="video-title">Session Recording</div>
+                    <div class="video-subtitle">Click to play • 1h 35min • HD Quality</div>
+                </div>
+            </div>
+            
+            <div class="video-controls">
+                <div class="control-group">
+                    <button class="control-btn" onclick="togglePlay()">⏸</button>
+                    <button class="control-btn" onclick="skipBackward()">⏮</button>
+                    <button class="control-btn" onclick="skipForward()">⏭</button>
+                    <button class="control-btn" onclick="toggleVolume()">🔊</button>
+                </div>
+                
+                <div class="progress-bar" onclick="seekVideo(event)">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+                
+                <div class="control-group">
+                    <span class="time-display">35:42 / 1:35:00</span>
+                    <button class="control-btn" onclick="toggleSpeed()">1x</button>
+                    <button class="control-btn" onclick="toggleFullscreen()">⛶</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Downloads Section -->
+        <div class="downloads-section">
+            <div class="section-header">
+                <h2 class="section-title">Downloads</h2>
+                <button class="download-all-btn" onclick="downloadAll()">
+                    <span>⬇</span>
+                    <span>Download All Files</span>
+                </button>
+            </div>
+            
+            <div class="downloads-grid">
+                <!-- Presentation -->
+                <div class="download-item" onclick="downloadFile('presentation')">
+                    <div class="download-info">
+                        <div class="file-icon pdf">📄</div>
+                        <div class="file-details">
+                            <div class="file-name">Presentation.pdf</div>
+                            <div class="file-meta">
+                                <span class="file-size">📊 15.2 MB</span>
+                                <span class="file-date">📅 Updated Dec 15, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="download-btn">↓</button>
+                </div>
+
+                <!-- Q&A Log -->
+                <div class="download-item" onclick="downloadFile('qa')">
+                    <div class="download-info">
+                        <div class="file-icon doc">📝</div>
+                        <div class="file-details">
+                            <div class="file-name">Q&A_Log.docx</div>
+                            <div class="file-meta">
+                                <span class="file-size">📊 892 KB</span>
+                                <span class="file-date">📅 Updated Dec 15, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="download-btn">↓</button>
+                </div>
+
+                <!-- Attendee List -->
+                <div class="download-item" onclick="downloadFile('attendees')">
+                    <div class="download-info">
+                        <div class="file-icon csv">📊</div>
+                        <div class="file-details">
+                            <div class="file-name">Attendee_List.csv</div>
+                            <div class="file-meta">
+                                <span class="file-size">📊 124 KB</span>
+                                <span class="file-date">📅 Updated Dec 15, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="download-btn">↓</button>
+                </div>
+
+                <!-- Session Notes -->
+                <div class="download-item" onclick="downloadFile('notes')">
+                    <div class="download-info">
+                        <div class="file-icon txt">📋</div>
+                        <div class="file-details">
+                            <div class="file-name">Session_Notes.txt</div>
+                            <div class="file-meta">
+                                <span class="file-size">📊 48 KB</span>
+                                <span class="file-date">📅 Updated Dec 15, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="download-btn">↓</button>
+                </div>
+
+                <!-- Recording -->
+                <div class="download-item" onclick="downloadFile('recording')">
+                    <div class="download-info">
+                        <div class="file-icon video">🎥</div>
+                        <div class="file-details">
+                            <div class="file-name">Session_Recording.mp4</div>
+                            <div class="file-meta">
+                                <span class="file-size">📊 1.8 GB</span>
+                                <span class="file-date">📅 Updated Dec 15, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="download-btn">↓</button>
+                </div>
+
+                <!-- Additional Resources -->
+                <div class="download-item" onclick="downloadFile('resources')">
+                    <div class="download-info">
+                        <div class="file-icon pdf">📚</div>
+                        <div class="file-details">
+                            <div class="file-name">Additional_Resources.pdf</div>
+                            <div class="file-meta">
+                                <span class="file-size">📊 5.4 MB</span>
+                                <span class="file-date">📅 Updated Dec 15, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="download-btn">↓</button>
+                </div>
+
+                <!-- Chat Transcript -->
+                <div class="download-item" onclick="downloadFile('chat')">
+                    <div class="download-info">
+                        <div class="file-icon txt">💬</div>
+                        <div class="file-details">
+                            <div class="file-name">Chat_Transcript.txt</div>
+                            <div class="file-meta">
+                                <span class="file-size">📊 156 KB</span>
+                                <span class="file-date">📅 Updated Dec 15, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="download-btn">↓</button>
+                </div>
+
+                <!-- Poll Results -->
+                <div class="download-item" onclick="downloadFile('polls')">
+                    <div class="download-info">
+                        <div class="file-icon csv">📊</div>
+                        <div class="file-details">
+                            <div class="file-name">Poll_Results.csv</div>
+                            <div class="file-meta">
+                                <span class="file-size">📊 32 KB</span>
+                                <span class="file-date">📅 Updated Dec 15, 2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="download-btn">↓</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-value">95%</div>
+                <div class="stat-label">Completion Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">324</div>
+                <div class="stat-label">Questions Asked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">89%</div>
+                <div class="stat-label">Engagement Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4.8</div>
+                <div class="stat-label">Average Rating</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">847</div>
+                <div class="stat-label">Total Views</div>
+            </div>
+        </div>
+
+        <!-- Related Sessions -->
+        <div class="related-section">
+            <h2 class="section-title">Related Sessions</h2>
+            
+            <div class="related-grid">
+                <div class="related-card" onclick="goToSession(1)">
+                    <div class="related-title">Digital Transformation in Creative Industries</div>
+                    <div class="related-info">
+                        <span>🎤 Dr. Michael Chen</span>
+                        <span>⏰ 1h 20min</span>
+                        <span>⭐ 4.7</span>
+                    </div>
+                </div>
+                
+                <div class="related-card" onclick="goToSession(2)">
+                    <div class="related-title">Machine Learning for Artists</div>
+                    <div class="related-info">
+                        <span>🎤 Prof. Emily Davis</span>
+                        <span>⏰ 45min</span>
+                        <span>⭐ 4.9</span>
+                    </div>
+                </div>
+                
+                <div class="related-card" onclick="goToSession(3)">
+                    <div class="related-title">The Future of Digital Art</div>
+                    <div class="related-info">
+                        <span>🎤 Alex Rodriguez</span>
+                        <span>⏰ 1h 10min</span>
+                        <span>⭐ 4.6</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span>✓</span>
+        <span id="toastMessage">Download started!</span>
+    </div>
+
+    <script>
+        let isPlaying = false;
+        let currentSpeed = 1;
+        let isMuted = false;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            animateElements();
+            simulateProgress();
+        });
+
+        // Animate elements on load
+        function animateElements() {
+            const items = document.querySelectorAll('.download-item');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(-20px)';
+                
+                setTimeout(() => {
+                    item.style.transition = 'all 0.4s ease-out';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateX(0)';
+                }, index * 100);
+            });
+        }
+
+        // Video controls
+        function playVideo() {
+            const player = document.getElementById('videoPlayer');
+            player.innerHTML = `
+                <div style="color: white; font-size: 24px;">
+                    <div style="margin-bottom: 16px;">🎬</div>
+                    <div>Playing Session Recording...</div>
+                    <div style="font-size: 14px; margin-top: 8px; opacity: 0.8;">
+                        (Video player simulation)
+                    </div>
+                </div>
+            `;
+            isPlaying = true;
+            simulatePlayback();
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            showToast(isPlaying ? 'Playing' : 'Paused');
+        }
+
+        function skipBackward() {
+            showToast('Skipped backward 10 seconds');
+        }
+
+        function skipForward() {
+            showToast('Skipped forward 10 seconds');
+        }
+
+        function toggleVolume() {
+            isMuted = !isMuted;
+            showToast(isMuted ? 'Muted' : 'Unmuted');
+        }
+
+        function toggleSpeed() {
+            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+            const currentIndex = speeds.indexOf(currentSpeed);
+            currentSpeed = speeds[(currentIndex + 1) % speeds.length];
+            event.target.textContent = currentSpeed + 'x';
+            showToast(`Playback speed: ${currentSpeed}x`);
+        }
+
+        function toggleFullscreen() {
+            showToast('Fullscreen mode');
+        }
+
+        function seekVideo(event) {
+            const bar = event.currentTarget;
+            const rect = bar.getBoundingClientRect();
+            const percent = ((event.clientX - rect.left) / rect.width) * 100;
+            document.getElementById('progressBar').style.width = percent + '%';
+            showToast(`Seeking to ${Math.round(percent)}%`);
+        }
+
+        // Simulate playback progress
+        function simulatePlayback() {
+            let progress = 35;
+            const interval = setInterval(() => {
+                if (!isPlaying) return;
+                
+                progress += 0.1;
+                if (progress > 100) progress = 100;
+                
+                document.getElementById('progressBar').style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    isPlaying = false;
+                }
+            }, 100);
+        }
+
+        // Simulate initial progress
+        function simulateProgress() {
+            // Progress bar is already set to 35% in CSS
+        }
+
+        // Download functions
+        function downloadFile(type) {
+            const fileNames = {
+                presentation: 'Presentation.pdf',
+                qa: 'Q&A_Log.docx',
+                attendees: 'Attendee_List.csv',
+                notes: 'Session_Notes.txt',
+                recording: 'Session_Recording.mp4',
+                resources: 'Additional_Resources.pdf',
+                chat: 'Chat_Transcript.txt',
+                polls: 'Poll_Results.csv'
+            };
+            
+            showToast(`Downloading ${fileNames[type]}`);
+            
+            // Simulate download
+            setTimeout(() => {
+                showToast(`${fileNames[type]} downloaded successfully!`);
+            }, 2000);
+        }
+
+        function downloadAll() {
+            showToast('Preparing all files for download...');
+            
+            setTimeout(() => {
+                showToast('All files downloaded successfully!');
+            }, 3000);
+        }
+
+        // Navigation
+        function goToSession(id) {
+            showToast('Loading session...');
+            setTimeout(() => {
+                console.log(`Navigating to session ${id}`);
+            }, 500);
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

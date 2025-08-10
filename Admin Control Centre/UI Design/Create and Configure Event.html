@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Center - Dashboard</title>
+    <link rel="stylesheet" href="../../bookmein2-style-library.css">
+</head>
+<body>
+    <div class="sidebar-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="mb-xl">
+                <h2 class="text-h3 text-primary">Admin Control Center</h2>
+            </div>
+            
+            <nav class="nav flex-col">
+                <a href="#" class="nav-link active">
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span>Event Configuration</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span>User Management</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span>Exhibitors</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span>Bookings</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span>Reports</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header Bar -->
+            <header class="flex justify-between items-center mb-xl">
+                <h1 class="text-h2">Dashboard</h1>
+                <div class="flex items-center gap-md">
+                    <div class="avatar avatar-md">
+                        <span>AD</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-2 gap-lg">
+                <!-- Live Stats Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-h4">Live Stats</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="mb-md">
+                            <div class="flex justify-between items-center mb-sm">
+                                <span class="text-secondary">Active Sessions</span>
+                                <span class="text-h3 text-primary">24</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 65%;"></div>
+                            </div>
+                        </div>
+                        <div class="mb-md">
+                            <div class="flex justify-between items-center mb-sm">
+                                <span class="text-secondary">Online Attendees</span>
+                                <span class="text-h3 text-primary">1,234</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 80%;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-sm">
+                                <span class="text-secondary">Registrations Today</span>
+                                <span class="text-h3 text-primary">56</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" style="width: 45%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Overview Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-h4">Event Overview</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="data-list">
+                            <div class="data-list-item">
+                                <div class="flex justify-between">
+                                    <span class="text-secondary">Event Name</span>
+                                    <span class="font-medium">Annual Tech Conference 2024</span>
+                                </div>
+                            </div>
+                            <div class="data-list-item">
+                                <div class="flex justify-between">
+                                    <span class="text-secondary">Start Date</span>
+                                    <span class="font-medium">March 15, 2024</span>
+                                </div>
+                            </div>
+                            <div class="data-list-item">
+                                <div class="flex justify-between">
+                                    <span class="text-secondary">Total Registrations</span>
+                                    <span class="font-medium">2,456</span>
+                                </div>
+                            </div>
+                            <div class="data-list-item">
+                                <div class="flex justify-between">
+                                    <span class="text-secondary">Status</span>
+                                    <span class="badge badge-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Bookings Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-h4">Recent Bookings</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="data-list">
+                            <div class="data-list-item">
+                                <div class="data-list-header">
+                                    <span class="data-list-title">John Smith</span>
+                                    <span class="badge badge-success">Confirmed</span>
+                                </div>
+                                <div class="data-list-meta">Workshop A - 10:00 AM</div>
+                            </div>
+                            <div class="data-list-item">
+                                <div class="data-list-header">
+                                    <span class="data-list-title">Sarah Johnson</span>
+                                    <span class="badge badge-warning">Pending</span>
+                                </div>
+                                <div class="data-list-meta">Keynote Session - 2:00 PM</div>
+                            </div>
+                            <div class="data-list-item">
+                                <div class="data-list-header">
+                                    <span class="data-list-title">Mike Davis</span>
+                                    <span class="badge badge-success">Confirmed</span>
+                                </div>
+                                <div class="data-list-meta">Panel Discussion - 4:00 PM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Tasks Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="text-h4">Pending Tasks</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="data-list">
+                            <div class="data-list-item">
+                                <div class="flex items-start gap-sm">
+                                    <input type="checkbox" class="mt-xs">
+                                    <div class="flex-1">
+                                        <div class="font-medium">Review speaker submissions</div>
+                                        <div class="text-sm text-tertiary">Due in 2 hours</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="data-list-item">
+                                <div class="flex items-start gap-sm">
+                                    <input type="checkbox" class="mt-xs">
+                                    <div class="flex-1">
+                                        <div class="font-medium">Approve venue layout changes</div>
+                                        <div class="text-sm text-tertiary">Due today</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="data-list-item">
+                                <div class="flex items-start gap-sm">
+                                    <input type="checkbox" class="mt-xs">
+                                    <div class="flex-1">
+                                        <div class="font-medium">Send reminder emails</div>
+                                        <div class="text-sm text-tertiary">Due tomorrow</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

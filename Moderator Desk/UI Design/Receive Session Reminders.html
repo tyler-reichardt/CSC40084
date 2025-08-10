@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Reminder - BookMeIn2</title>
+    <link rel="stylesheet" href="bookmein2-style-library.css">
+    <style>
+        /* Import the BookMeIn2 Style Library (embedded for demo) */
+        :root {
+          --primary-50: #eff6ff;
+          --primary-100: #dbeafe;
+          --primary-200: #bfdbfe;
+          --primary-300: #93c5fd;
+          --primary-400: #60a5fa;
+          --primary-500: #3b82f6;
+          --primary-600: #2563eb;
+          --primary-700: #1d4ed8;
+          --primary-800: #1e40af;
+          --primary-900: #1e3a8a;
+          --success-50: #ecfdf5;
+          --success-500: #10b981;
+          --success-600: #059669;
+          --warning-50: #fffbeb;
+          --warning-500: #f59e0b;
+          --warning-600: #d97706;
+          --error-50: #fef2f2;
+          --error-500: #ef4444;
+          --error-600: #dc2626;
+          --info-50: #f0f9ff;
+          --info-500: #06b6d4;
+          --info-600: #0891b2;
+          --neutral-50: #f8fafc;
+          --neutral-100: #f1f5f9;
+          --neutral-200: #e2e8f0;
+          --neutral-300: #cbd5e1;
+          --neutral-400: #94a3b8;
+          --neutral-500: #64748b;
+          --neutral-600: #475569;
+          --neutral-700: #334155;
+          --neutral-800: #1e293b;
+          --neutral-900: #0f172a;
+          --bg-primary: var(--neutral-50);
+          --bg-secondary: var(--neutral-100);
+          --bg-tertiary: var(--neutral-200);
+          --text-primary: var(--neutral-900);
+          --text-secondary: var(--neutral-600);
+          --text-tertiary: var(--neutral-400);
+          --border-color: var(--neutral-200);
+          --border-focus: var(--primary-500);
+          --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+          --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+          --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+          --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+          --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+          --spacing-xs: 0.25rem;
+          --spacing-sm: 0.5rem;
+          --spacing-md: 1rem;
+          --spacing-lg: 1.5rem;
+          --spacing-xl: 2rem;
+          --spacing-2xl: 3rem;
+          --spacing-3xl: 4rem;
+          --radius-sm: 0.25rem;
+          --radius: 0.5rem;
+          --radius-md: 0.75rem;
+          --radius-lg: 1rem;
+          --radius-xl: 1.5rem;
+          --radius-full: 9999px;
+          --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          --transition-fast: 150ms ease-out;
+          --transition: 200ms ease;
+          --transition-slow: 300ms ease;
+          --z-modal-backdrop: 1040;
+          --z-modal: 1050;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+          font-family: var(--font-family); 
+          line-height: 1.5; 
+          color: var(--text-primary); 
+          background-color: var(--bg-primary);
+          min-height: 100vh;
+        }
+
+        /* Button Styles */
+        .btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: var(--spacing-sm);
+          padding: 0.875rem 2rem;
+          border: none;
+          border-radius: var(--radius);
+          font-size: 0.9375rem;
+          font-weight: 600;
+          font-family: inherit;
+          line-height: 1;
+          cursor: pointer;
+          transition: all var(--transition);
+          text-decoration: none;
+          white-space: nowrap;
+          min-width: 140px;
+        }
+        .btn:focus { outline: 2px solid var(--border-focus); outline-offset: 2px; }
+        .btn-primary { 
+          background-color: var(--primary-600); 
+          color: white; 
+        }
+        .btn-primary:hover { 
+          background-color: var(--primary-700); 
+          transform: translateY(-1px);
+          box-shadow: var(--shadow-md);
+        }
+        .btn-secondary { 
+          background-color: white; 
+          color: var(--text-primary); 
+          border: 2px solid var(--border-color); 
+        }
+        .btn-secondary:hover { 
+          background-color: var(--bg-secondary); 
+          border-color: var(--neutral-300); 
+        }
+
+        /* Background Dashboard (Blurred) */
+        .dashboard-background {
+          padding: var(--spacing-xl);
+          filter: blur(4px);
+          pointer-events: none;
+          opacity: 0.4;
+        }
+
+        .dashboard-header {
+          background: white;
+          padding: var(--spacing-lg);
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow);
+          margin-bottom: var(--spacing-xl);
+        }
+
+        .dashboard-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin-bottom: var(--spacing-sm);
+        }
+
+        .session-list {
+          background: white;
+          border-radius: var(--radius-lg);
+          padding: var(--spacing-lg);
+          box-shadow: var(--shadow);
+        }
+
+        .session-item {
+          padding: var(--spacing-md);
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .session-item:last-child {
+          border-bottom: none;
+        }
+
+        .session-time {
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+
+        .session-title {
+          color: var(--text-secondary);
+          margin-top: var(--spacing-xs);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: var(--z-modal-backdrop);
+          padding: var(--spacing-lg);
+          animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        /* Reminder Modal */
+        .reminder-modal {
+          background: white;
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-xl);
+          width: 100%;
+          max-width: 480px;
+          padding: var(--spacing-xl);
+          position: relative;
+          animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+          from { 
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to { 
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .reminder-header {
+          display: flex;
+          align-items: flex-start;
+          margin-bottom: var(--spacing-lg);
+        }
+
+        .reminder-icon {
+          width: 48px;
+          height: 48px;
+          background: linear-gradient(135deg, var(--warning-400), var(--warning-500));
+          border-radius: var(--radius-full);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-right: var(--spacing-md);
+          flex-shrink: 0;
+          animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { 
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+          }
+          50% { 
+            transform: scale(1.05);
+            box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+          }
+        }
+
+        .reminder-icon::before {
+          content: '🔔';
+          font-size: 1.5rem;
+        }
+
+        .reminder-title-group {
+          flex: 1;
+        }
+
+        .reminder-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin-bottom: var(--spacing-xs);
+        }
+
+        .reminder-subtitle {
+          font-size: 0.875rem;
+          color: var(--text-tertiary);
+        }
+
+        .close-btn {
+          position: absolute;
+          top: var(--spacing-md);
+          right: var(--spacing-md);
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          color: var(--text-tertiary);
+          cursor: pointer;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: var(--radius);
+          transition: all var(--transition);
+        }
+
+        .close-btn:hover {
+          background: var(--bg-secondary);
+          color: var(--text-primary);
+        }
+
+        .reminder-content {
+          margin-bottom: var(--spacing-xl);
+        }
+
+        .reminder-message {
+          font-size: 1.0625rem;
+          line-height: 1.6;
+          color: var(--text-primary);
+          margin-bottom: var(--spacing-lg);
+        }
+
+        .session-details {
+          background: var(--primary-50);
+          border: 2px solid var(--primary-200);
+          border-radius: var(--radius);
+          padding: var(--spacing-md);
+        }
+
+        .session-details-title {
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--primary-600);
+          font-weight: 600;
+          margin-bottom: var(--spacing-sm);
+        }
+
+        .session-name {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: var(--spacing-sm);
+        }
+
+        .session-info {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-xs);
+        }
+
+        .session-info-item {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-sm);
+          font-size: 0.875rem;
+          color: var(--text-secondary);
+        }
+
+        .countdown-timer {
+          background: var(--warning-50);
+          border: 2px solid var(--warning-200);
+          border-radius: var(--radius);
+          padding: var(--spacing-sm) var(--spacing-md);
+          text-align: center;
+          margin: var(--spacing-lg) 0;
+        }
+
+        .countdown-label {
+          font-size: 0.75rem;
+          color: var(--warning-600);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          font-weight: 600;
+        }
+
+        .countdown-time {
+          font-size: 2rem;
+          font-weight: 700;
+          color: var(--warning-600);
+          font-family: var(--font-mono);
+        }
+
+        .reminder-actions {
+          display: flex;
+          gap: var(--spacing-md);
+        }
+
+        .reminder-actions .btn {
+          flex: 1;
+        }
+
+        /* Toast Notification (Alternative compact version) */
+        .toast-notification {
+          position: fixed;
+          top: var(--spacing-lg);
+          right: var(--spacing-lg);
+          background: white;
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-xl);
+          padding: var(--spacing-md) var(--spacing-lg);
+          max-width: 400px;
+          z-index: var(--z-modal);
+          animation: slideInRight 0.3s ease;
+          border-left: 4px solid var(--warning-500);
+        }
+
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(100%);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .toast-header {
+          display: flex;
+          align-items: center;
+          gap: var(--spacing-sm);
+          margin-bottom: var(--spacing-sm);
+        }
+
+        .toast-icon {
+          width: 24px;
+          height: 24px;
+          background: var(--warning-500);
+          border-radius: var(--radius-full);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          font-size: 0.875rem;
+        }
+
+        .toast-title {
+          font-weight: 600;
+          color: var(--text-primary);
+          flex: 1;
+        }
+
+        .toast-message {
+          color: var(--text-secondary);
+          font-size: 0.875rem;
+          margin-bottom: var(--spacing-sm);
+        }
+
+        .toast-actions {
+          display: flex;
+          gap: var(--spacing-sm);
+        }
+
+        .toast-btn {
+          padding: 0.375rem 0.75rem;
+          font-size: 0.75rem;
+          border-radius: var(--radius-sm);
+          border: none;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all var(--transition);
+        }
+
+        .toast-btn-primary {
+          background: var(--primary-600);
+          color: white;
+        }
+
+        .toast-btn-primary:hover {
+          background: var(--primary-700);
+        }
+
+        .toast-btn-secondary {
+          background: var(--bg-tertiary);
+          color: var(--text-primary);
+        }
+
+        .toast-btn-secondary:hover {
+          background: var(--neutral-300);
+        }
+
+        /* Additional reminder styles */
+        .urgency-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: var(--spacing-xs);
+          background: var(--error-50);
+          color: var(--error-600);
+          padding: 0.25rem 0.75rem;
+          border-radius: var(--radius-full);
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: var(--spacing-md);
+        }
+
+        .urgency-badge.warning {
+          background: var(--warning-50);
+          color: var(--warning-600);
+        }
+
+        .urgency-badge.info {
+          background: var(--info-50);
+          color: var(--info-600);
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+          .reminder-modal {
+            padding: var(--spacing-lg);
+          }
+
+          .reminder-actions {
+            flex-direction: column;
+          }
+
+          .countdown-time {
+            font-size: 1.5rem;
+          }
+        }
+
+        .clock-icon::before { content: '⏰'; }
+        .location-icon::before { content: '📍'; }
+        .people-icon::before { content: '👥'; }
+    </style>
+</head>
+<body>
+    <!-- Background Dashboard (Blurred) -->
+    <div class="dashboard-background">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Moderator Dashboard</h1>
+            <p style="color: var(--text-secondary);">Welcome back, Alex Johnson</p>
+        </div>
+        <div class="session-list">
+            <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--spacing-md);">Today's Sessions</h2>
+            <div class="session-item">
+                <div class="session-time">10:00 AM - 11:00 AM</div>
+                <div class="session-title">Opening Keynote: Future of Technology</div>
+            </div>
+            <div class="session-item">
+                <div class="session-time">11:30 AM - 12:30 PM</div>
+                <div class="session-title">Panel Discussion: AI in Healthcare</div>
+            </div>
+            <div class="session-item">
+                <div class="session-time">2:00 PM - 3:00 PM</div>
+                <div class="session-title">Workshop: Cloud Architecture Best Practices</div>
+            </div>
+            <div class="session-item">
+                <div class="session-time">3:30 PM - 4:30 PM</div>
+                <div class="session-title">Fireside Chat: Startup Innovation</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Reminder Modal -->
+    <div class="modal-overlay" id="reminderModal">
+        <div class="reminder-modal">
+            <button class="close-btn" onclick="dismissReminder()">×</button>
+            
+            <div class="reminder-header">
+                <div class="reminder-icon"></div>
+                <div class="reminder-title-group">
+                    <h2 class="reminder-title">Reminder</h2>
+                    <p class="reminder-subtitle">Upcoming moderation session</p>
+                </div>
+            </div>
+
+            <div class="reminder-content">
+                <div class="urgency-badge warning">
+                    <span class="clock-icon"></span>
+                    Starting in 15 minutes
+                </div>
+
+                <p class="reminder-message">
+                    You are scheduled to moderate <strong>"Panel Discussion: AI in Healthcare"</strong> starting soon. Please confirm your availability and prepare for the session.
+                </p>
+
+                <div class="session-details">
+                    <div class="session-details-title">Session Details</div>
+                    <div class="session-name">Panel Discussion: AI in Healthcare</div>
+                    <div class="session-info">
+                        <div class="session-info-item">
+                            <span class="clock-icon"></span>
+                            <span>11:30 AM - 12:30 PM (60 minutes)</span>
+                        </div>
+                        <div class="session-info-item">
+                            <span class="location-icon"></span>
+                            <span>Main Auditorium - Stage A</span>
+                        </div>
+                        <div class="session-info-item">
+                            <span class="people-icon"></span>
+                            <span>Expected attendance: 450+ participants</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="countdown-timer">
+                    <div class="countdown-label">Time Remaining</div>
+                    <div class="countdown-time" id="countdown">14:52</div>
+                </div>
+            </div>
+
+            <div class="reminder-actions">
+                <button class="btn btn-primary" onclick="confirmSession()">
+                    Confirm Availability
+                </button>
+                <button class="btn btn-secondary" onclick="dismissReminder()">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alternative Toast Notification (Hidden by default) -->
+    <div class="toast-notification" id="toastReminder" style="display: none;">
+        <div class="toast-header">
+            <div class="toast-icon">!</div>
+            <div class="toast-title">Session Starting Soon</div>
+            <button class="close-btn" onclick="hideToast()" style="position: static; margin: 0;">×</button>
+        </div>
+        <div class="toast-message">
+            Your moderation session "Panel Discussion: AI in Healthcare" starts in 15 minutes.
+        </div>
+        <div class="toast-actions">
+            <button class="toast-btn toast-btn-primary" onclick="confirmFromToast()">Confirm</button>
+            <button class="toast-btn toast-btn-secondary" onclick="snoozeReminder()">Snooze 5 min</button>
+        </div>
+    </div>
+
+    <script>
+        // Countdown timer
+        let timeRemaining = 15 * 60; // 15 minutes in seconds
+        
+        function updateCountdown() {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            const countdownEl = document.getElementById('countdown');
+            if (countdownEl) {
+                countdownEl.textContent = display;
+                
+                // Change color as time runs out
+                if (timeRemaining <= 300) { // 5 minutes
+                    countdownEl.style.color = 'var(--error-600)';
+                }
+            }
+            
+            if (timeRemaining > 0) {
+                timeRemaining--;
+            } else {
+                clearInterval(countdownInterval);
+                // Show urgent notification
+                showUrgentNotification();
+            }
+        }
+        
+        const countdownInterval = setInterval(updateCountdown, 1000);
+
+        // Modal actions
+        function confirmSession() {
+            clearInterval(countdownInterval);
+            alert('Thank you! Your availability has been confirmed. You will receive the moderation dashboard link 5 minutes before the session starts.');
+            closeModal();
+            
+            // Show success notification
+            showSuccessNotification();
+        }
+
+        function dismissReminder() {
+            if (confirm('Are you sure you want to dismiss this reminder? You won\'t receive another notification for this session.')) {
+                clearInterval(countdownInterval);
+                closeModal();
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('reminderModal');
+            modal.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        // Toast actions
+        function showToast() {
+            const toast = document.getElementById('toastReminder');
+            toast.style.display = 'block';
+        }
+
+        function hideToast() {
+            const toast = document.getElementById('toastReminder');
+            toast.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 300);
+        }
+
+        function confirmFromToast() {
+            confirmSession();
+            hideToast();
+        }
+
+        function snoozeReminder() {
+            hideToast();
+            setTimeout(() => {
+                showToast();
+            }, 5 * 60 * 1000); // Show again in 5 minutes
+        }
+
+        // Show urgent notification when time runs out
+        function showUrgentNotification() {
+            const modal = document.querySelector('.reminder-modal');
+            const badge = modal.querySelector('.urgency-badge');
+            badge.classList.remove('warning');
+            badge.classList.add('error');
+            badge.innerHTML = '<span class="clock-icon"></span> Session starting NOW!';
+            
+            // Shake animation
+            modal.style.animation = 'shake 0.5s';
+        }
+
+        // Show success notification
+        function showSuccessNotification() {
+            const successToast = document.createElement('div');
+            successToast.className = 'toast-notification';
+            successToast.style.borderLeftColor = 'var(--success-500)';
+            successToast.innerHTML = `
+                <div class="toast-header">
+                    <div class="toast-icon" style="background: var(--success-500);">✓</div>
+                    <div class="toast-title">Confirmation Successful</div>
+                </div>
+                <div class="toast-message">
+                    You're all set! We'll send you the moderation dashboard link 5 minutes before the session.
+                </div>
+            `;
+            document.body.appendChild(successToast);
+            
+            setTimeout(() => {
+                successToast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    successToast.remove();
+                }, 300);
+            }, 5000);
+        }
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-10px); }
+                75% { transform: translateX(10px); }
+            }
+            @keyframes fadeOut {
+                from { opacity: 1; }
+                to { opacity: 0; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Demo: Show toast after 5 seconds
+        setTimeout(() => {
+            console.log('Demo: Toast notification would appear here as an alternative compact version');
+        }, 5000);
+
+        // Auto-play sound notification (in production)
+        function playNotificationSound() {
+            // In production, play a gentle notification sound
+            console.log('🔔 Notification sound would play here');
+        }
+
+        // Play sound when modal loads
+        window.addEventListener('load', playNotificationSound);
+    </script>
+</body>
+</html>

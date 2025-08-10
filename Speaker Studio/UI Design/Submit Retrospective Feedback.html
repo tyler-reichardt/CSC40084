@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Feedback - BookMeIn2</title>
+    <link rel="stylesheet" href="bookmein2-style-library.css">
+    <style>
+        /* Page specific styles for clean minimal design */
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e0e6ed 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+            margin: 0;
+            padding: var(--spacing-lg);
+        }
+
+        .feedback-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 600px;
+            padding: 48px;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .feedback-header {
+            text-align: center;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .feedback-icon {
+            width: 72px;
+            height: 72px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feedback-icon::after {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.2; }
+            50% { transform: scale(1.1); opacity: 0.1; }
+        }
+
+        .feedback-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .feedback-subtitle {
+            font-size: 16px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        /* Progress Indicator */
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .progress-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .section-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        /* Rating Sections */
+        .rating-group {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .rating-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #334155;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* Star Rating */
+        .star-rating {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .star {
+            width: 44px;
+            height: 44px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #cbd5e1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .star::before {
+            content: '★';
+            position: absolute;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .star::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            transform: scale(0);
+            transition: transform 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .star:hover {
+            border-color: #fbbf24;
+            transform: translateY(-2px);
+        }
+
+        .star.filled::before {
+            color: #f59e0b;
+            z-index: 1;
+        }
+
+        .star.filled::after {
+            transform: scale(1);
+        }
+
+        .star.filled {
+            border-color: #fbbf24;
+            animation: starPop 0.3s ease;
+        }
+
+        @keyframes starPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .rating-text {
+            font-size: 13px;
+            color: #64748b;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 32px;
+        }
+
+        .textarea-wrapper {
+            position: relative;
+        }
+
+        .form-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.2s ease;
+            background: white;
+            color: #1a1a1a;
+            box-sizing: border-box;
+        }
+
+        .form-textarea::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .char-count {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            font-size: 12px;
+            color: #94a3b8;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Additional Questions */
+        .quick-questions {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .question-item {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-text {
+            font-size: 14px;
+            color: #334155;
+            flex: 1;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 4px;
+            background: white;
+            padding: 2px;
+            border-radius: 8px;
+        }
+
+        .toggle-option {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-option:hover {
+            background: #f1f5f9;
+        }
+
+        .toggle-option.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 18px 32px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #374151 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 24px;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: left 0.5s ease;
+        }
+
+        .btn-submit:hover::before {
+            left: 100%;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Loading state */
+        .btn-submit.loading {
+            color: transparent;
+        }
+
+        .btn-submit.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success State */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Footer */
+        .feedback-footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .footer-link {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .feedback-container {
+                padding: 32px 24px;
+            }
+
+            .feedback-title {
+                font-size: 24px;
+            }
+
+            .star {
+                width: 36px;
+                height: 36px;
+                font-size: 20px;
+            }
+
+            .star::before {
+                font-size: 20px;
+            }
+
+            .toggle-option {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="feedback-container">
+        <!-- Header -->
+        <div class="feedback-header">
+            <div class="feedback-icon">📝</div>
+            <h1 class="feedback-title">Event Feedback<br>For Speakers</h1>
+            <p class="feedback-subtitle">Your insights help us improve future events</p>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-dots">
+            <div class="progress-dot active"></div>
+            <div class="progress-dot"></div>
+            <div class="progress-dot"></div>
+        </div>
+
+        <!-- Feedback Form -->
+        <form id="feedbackForm">
+            <!-- Platform Experience Rating -->
+            <div class="form-section">
+                <label class="section-label">Platform Experience</label>
+                <div class="rating-group">
+                    <label class="rating-label">How would you rate the overall platform?</label>
+                    <div class="star-rating" data-rating="0" data-field="platform">
+                        <div class="star" data-value="1"></div>
+                        <div class="star" data-value="2"></div>
+                        <div class="star" data-value="3"></div>
+                        <div class="star" data-value="4"></div>
+                        <div class="star" data-value="5"></div>
+                    </div>
+                    <div class="rating-text" id="platformText">Click to rate</div>
+                </div>
+
+                <!-- Additional Ratings -->
+                <div class="rating-group">
+                    <label class="rating-label">Audio/Video Quality</label>
+                    <div class="star-rating" data-rating="0" data-field="quality">
+                        <div class="star" data-value="1"></div>
+                        <div class="star" data-value="2"></div>
+                        <div class="star" data-value="3"></div>
+                        <div class="star" data-value="4"></div>
+                        <div class="star" data-value="5"></div>
+                    </div>
+                    <div class="rating-text" id="qualityText">Click to rate</div>
+                </div>
+
+                <div class="rating-group">
+                    <label class="rating-label">Audience Engagement Tools</label>
+                    <div class="star-rating" data-rating="0" data-field="engagement">
+                        <div class="star" data-value="1"></div>
+                        <div class="star" data-value="2"></div>
+                        <div class="star" data-value="3"></div>
+                        <div class="star" data-value="4"></div>
+                        <div class="star" data-value="5"></div>
+                    </div>
+                    <div class="rating-text" id="engagementText">Click to rate</div>
+                </div>
+            </div>
+
+            <!-- Quick Questions -->
+            <div class="form-section">
+                <label class="section-label">Quick Feedback</label>
+                <div class="quick-questions">
+                    <div class="question-item">
+                        <span class="question-text">Would you use BookMeIn2 again?</span>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-option" data-value="yes">Yes</button>
+                            <button type="button" class="toggle-option" data-value="maybe">Maybe</button>
+                            <button type="button" class="toggle-option" data-value="no">No</button>
+                        </div>
+                    </div>
+                    <div class="question-item">
+                        <span class="question-text">Would you recommend to others?</span>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-option" data-value="yes">Yes</button>
+                            <button type="button" class="toggle-option" data-value="maybe">Maybe</button>
+                            <button type="button" class="toggle-option" data-value="no">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Comments -->
+            <div class="form-section comments-section">
+                <label class="section-label" for="comments">Additional Comments</label>
+                <div class="textarea-wrapper">
+                    <textarea 
+                        id="comments" 
+                        class="form-textarea" 
+                        placeholder="Share your thoughts, suggestions, or any issues you encountered..."
+                        maxlength="500"
+                    ></textarea>
+                    <span class="char-count">0/500</span>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn-submit">
+                Submit Feedback
+            </button>
+        </form>
+
+        <!-- Success Message (Hidden by default) -->
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✓</div>
+            <h2 style="margin: 0 0 8px 0; color: #1a1a1a;">Thank You!</h2>
+            <p style="color: #64748b; margin: 0;">Your feedback has been submitted successfully.</p>
+        </div>
+
+        <!-- Footer -->
+        <div class="feedback-footer">
+            <p class="footer-text">
+                Need help? <a href="#" class="footer-link">Contact Support</a> • 
+                <a href="#" class="footer-link">Privacy Policy</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            setupStarRatings();
+            setupQuickQuestions();
+            setupTextarea();
+            setupForm();
+        });
+
+        // Setup star ratings
+        function setupStarRatings() {
+            const ratingTexts = {
+                1: 'Poor',
+                2: 'Fair',
+                3: 'Good',
+                4: 'Very Good',
+                5: 'Excellent'
+            };
+
+            document.querySelectorAll('.star-rating').forEach(rating => {
+                const stars = rating.querySelectorAll('.star');
+                const field = rating.dataset.field;
+                const textElement = document.getElementById(field + 'Text');
+                
+                stars.forEach((star, index) => {
+                    star.addEventListener('mouseenter', function() {
+                        // Highlight on hover
+                        stars.forEach((s, i) => {
+                            if (i <= index) {
+                                s.style.transform = 'scale(1.1)';
+                                s.style.borderColor = '#fbbf24';
+                            } else {
+                                s.style.transform = 'scale(1)';
+                                s.style.borderColor = '#e2e8f0';
+                            }
+                        });
+                        
+                        // Update text on hover
+                        if (textElement) {
+                            textElement.textContent = ratingTexts[index + 1];
+                            textElement.style.color = '#f59e0b';
+                        }
+                    });
+                    
+                    star.addEventListener('mouseleave', function() {
+                        // Reset to selected state
+                        const currentRating = parseInt(rating.dataset.rating);
+                        stars.forEach((s, i) => {
+                            s.style.transform = 'scale(1)';
+                            if (i < currentRating) {
+                                s.classList.add('filled');
+                                s.style.borderColor = '#fbbf24';
+                            } else {
+                                s.classList.remove('filled');
+                                s.style.borderColor = '#e2e8f0';
+                            }
+                        });
+                        
+                        // Reset text
+                        if (textElement) {
+                            if (currentRating > 0) {
+                                textElement.textContent = ratingTexts[currentRating];
+                                textElement.style.color = '#f59e0b';
+                            } else {
+                                textElement.textContent = 'Click to rate';
+                                textElement.style.color = '#94a3b8';
+                            }
+                        }
+                    });
+                    
+                    star.addEventListener('click', function() {
+                        const value = parseInt(star.dataset.value);
+                        rating.dataset.rating = value;
+                        
+                        // Update stars
+                        stars.forEach((s, i) => {
+                            if (i < value) {
+                                s.classList.add('filled');
+                            } else {
+                                s.classList.remove('filled');
+                            }
+                        });
+                        
+                        // Update text
+                        if (textElement) {
+                            textElement.textContent = ratingTexts[value];
+                            textElement.style.color = '#f59e0b';
+                        }
+                        
+                        // Update progress
+                        updateProgress();
+                    });
+                });
+            });
+        }
+
+        // Setup quick questions
+        function setupQuickQuestions() {
+            document.querySelectorAll('.toggle-group').forEach(group => {
+                const buttons = group.querySelectorAll('.toggle-option');
+                
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        // Remove selected from siblings
+                        buttons.forEach(b => b.classList.remove('selected'));
+                        // Add selected to clicked
+                        this.classList.add('selected');
+                        
+                        // Update progress
+                        updateProgress();
+                    });
+                });
+            });
+        }
+
+        // Setup textarea
+        function setupTextarea() {
+            const textarea = document.getElementById('comments');
+            const charCount = document.querySelector('.char-count');
+            
+            textarea.addEventListener('input', function() {
+                const length = this.value.length;
+                charCount.textContent = `${length}/500`;
+                
+                if (length > 400) {
+                    charCount.style.color = '#ef4444';
+                } else {
+                    charCount.style.color = '#94a3b8';
+                }
+                
+                // Auto-resize
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+                
+                // Update progress
+                updateProgress();
+            });
+        }
+
+        // Update progress dots
+        function updateProgress() {
+            const dots = document.querySelectorAll('.progress-dot');
+            const ratings = document.querySelectorAll('.star-rating');
+            const questions = document.querySelectorAll('.toggle-option.selected');
+            const comments = document.getElementById('comments').value;
+            
+            let filledSections = 0;
+            
+            // Check ratings
+            let hasRatings = false;
+            ratings.forEach(r => {
+                if (parseInt(r.dataset.rating) > 0) hasRatings = true;
+            });
+            if (hasRatings) filledSections++;
+            
+            // Check questions
+            if (questions.length > 0) filledSections++;
+            
+            // Check comments
+            if (comments.length > 0) filledSections++;
+            
+            // Update dots
+            dots.forEach((dot, index) => {
+                if (index < filledSections) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Setup form submission
+        function setupForm() {
+            document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const btn = document.querySelector('.btn-submit');
+                const form = this;
+                const successMsg = document.getElementById('successMessage');
+                
+                // Validate at least one rating
+                const ratings = document.querySelectorAll('.star-rating');
+                let hasRating = false;
+                ratings.forEach(r => {
+                    if (parseInt(r.dataset.rating) > 0) hasRating = true;
+                });
+                
+                if (!hasRating) {
+                    showNotification('Please rate at least one aspect', 'warning');
+                    return;
+                }
+                
+                // Show loading state
+                btn.classList.add('loading');
+                btn.disabled = true;
+                
+                // Simulate submission
+                setTimeout(() => {
+                    // Hide form and show success
+                    form.style.display = 'none';
+                    successMsg.classList.add('show');
+                    
+                    // Redirect after delay
+                    setTimeout(() => {
+                        showNotification('Thank you for your feedback!', 'success');
+                        // window.location.href = '#dashboard';
+                    }, 2000);
+                }, 2000);
+            });
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 24px;
+                right: 24px;
+                padding: 16px 24px;
+                background: ${type === 'success' ? '#10b981' : type === 'warning' ? '#f59e0b' : '#4285f4'};
+                color: white;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                animation: slideIn 0.3s ease-out;
+                z-index: 1000;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add notification animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

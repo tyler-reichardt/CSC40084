@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Configuration Page</title>
+    <link rel="stylesheet" href="../../bookmein2-style-library.css">
+</head>
+<body>
+    <div class="container py-xl">
+        <div class="card card-elevated" style="max-width: 800px; margin: 0 auto;">
+            <div class="card-header">
+                <h2 class="text-h3">Event Configuration Page</h2>
+            </div>
+            
+            <div class="card-content">
+                <form>
+                    <!-- Event Name -->
+                    <div class="form-group">
+                        <label class="form-label required" for="event-name">Event Name</label>
+                        <input type="text" id="event-name" class="form-input" placeholder="Enter event name">
+                    </div>
+
+                    <!-- Date Fields -->
+                    <div class="grid grid-cols-2 gap-md">
+                        <div class="form-group">
+                            <label class="form-label required" for="start-date">Start Date</label>
+                            <input type="date" id="start-date" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required" for="end-date">End Date</label>
+                            <input type="date" id="end-date" class="form-input">
+                        </div>
+                    </div>
+
+                    <!-- Event Description -->
+                    <div class="form-group">
+                        <label class="form-label" for="event-description">Event Description</label>
+                        <textarea id="event-description" class="form-input form-textarea" 
+                                  placeholder="Enter event description" rows="4"></textarea>
+                    </div>
+
+                    <!-- Track Management Section -->
+                    <div class="form-group">
+                        <label class="form-label">Track Management</label>
+                        <div class="border rounded p-md bg-secondary">
+                            <table class="table w-full">
+                                <thead>
+                                    <tr>
+                                        <th>Track Name</th>
+                                        <th style="width: 120px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Keynote</td>
+                                        <td>
+                                            <div class="flex gap-xs">
+                                                <button type="button" class="btn btn-sm btn-secondary">Edit</button>
+                                                <button type="button" class="btn btn-sm btn-error">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Technical</td>
+                                        <td>
+                                            <div class="flex gap-xs">
+                                                <button type="button" class="btn btn-sm btn-secondary">Edit</button>
+                                                <button type="button" class="btn btn-sm btn-error">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Workshop A</td>
+                                        <td>
+                                            <div class="flex gap-xs">
+                                                <button type="button" class="btn btn-sm btn-secondary">Edit</button>
+                                                <button type="button" class="btn btn-sm btn-error">Delete</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <div class="mt-md">
+                                <button type="button" class="btn btn-secondary">
+                                    <span>+ Add Track</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="flex gap-md justify-end mt-xl">
+                        <button type="button" class="btn btn-secondary">Save Draft</button>
+                        <button type="submit" class="btn btn-primary">Publish Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
