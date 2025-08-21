@@ -7,7 +7,11 @@ class Attendee(User):
     Inherits from User.
     """
     def __init__(self, user_id: int, first_name: str, last_name: str, email: str):
-        pass
+        super().__init__(user_id, first_name, last_name, email)
+        self.bookings = []
+        self.interests = []
+        self.attended_presentations = []
+        self.feedback_given = []
 
     def book_presentation(self, presentation: 'Presentation') -> Optional['Booking']:
         pass
